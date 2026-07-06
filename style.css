@@ -1,0 +1,167 @@
+body { 
+    font-family: Arial, sans-serif; background-color: #f4f6f9; color: #333; 
+    padding: 20px; 
+    max-width: 1200px; 
+    margin: 0 auto; 
+}
+
+.container { 
+    background-color: #fff; padding: 25px; border-radius: 8px; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1); 
+}
+h2 { text-align: center; color: #2c3e50; margin-top: 0; font-size: 22px; }
+
+.tabs { display: flex; justify-content: space-around; margin-bottom: 20px; border-bottom: 2px solid #ccc; }
+.tab { padding: 12px 10px; cursor: pointer; font-weight: bold; color: #7f8c8d; width: 33.3%; text-align: center; font-size: 14px; }
+.tab.active { color: #3498db; border-bottom: 3px solid #3498db; }
+.panel { display: none; }
+.panel.active { display: block; }
+
+.form-group { margin-bottom: 15px; }
+label { display: block; margin-bottom: 6px; font-weight: bold; font-size: 14px; }
+
+/* ★修正箇所：テキストと数値の入力枠だけに100%幅を適用するように変更しました */
+select, input[type="text"], input[type="number"] { 
+    width: 100%; padding: 12px; box-sizing: border-box; 
+    border: 1px solid #ccc; border-radius: 4px; font-size: 16px; 
+}
+
+/* ★新規追加：ラジオボタンが巨大化しないようにサイズをリセット */
+input[type="radio"] {
+    width: auto;
+    margin: 0 5px 0 0;
+    cursor: pointer;
+    transform: scale(1.2); /* クリックしやすいように少しだけ大きくしています */
+}
+
+.input-flex { display: flex; gap: 10px; }
+.input-flex input { flex: 2; }
+.input-flex select { flex: 1; background-color: #fdfefe; }
+
+.filter-row { display: flex; gap: 10px; margin-bottom: 15px; }
+.filter-row select { flex: 1; background-color: #f8f9fa; }
+
+button.action-btn { 
+    padding: 14px; color: white; border: none; border-radius: 4px; 
+    font-size: 16px; cursor: pointer; font-weight: bold; width: 100%;
+}
+button.action-btn.primary { background-color: #2c3e50; flex: 3; }
+button.action-btn.primary:hover { background-color: #1a252f; }
+button.action-btn.secondary { background-color: #95a5a6; flex: 1; }
+button.action-btn.secondary:hover { background-color: #7f8c8d; }
+
+/* --- 追加レイアウトクラス（上段左右分割） --- */
+.search-layout {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+    flex-wrap: wrap;
+}
+.search-sidebar {
+    flex: 0 0 320px; /* 左側絞り込みの幅 */
+}
+.search-main {
+    flex: 1;
+    min-width: 400px; /* 右側周期表の最小幅 */
+}
+
+/* --- 周期表のサイズ調整（横揺れ防止） --- */
+.periodic-table-container {
+    width: 100%; margin-top: 0;
+    background-color: #f8f9fa; padding: 15px; border-radius: 6px; border: 1px solid #e2e8f0;
+    box-sizing: border-box;
+}
+.periodic-title { font-size: 14px; font-weight: bold; color: #4a5568; margin-bottom: 10px; text-align: center; }
+.periodic-table { 
+    width: 100%; 
+    border-spacing: 3px; 
+    border-collapse: separate; 
+    table-layout: fixed; /* 横にはみ出さなくなります */
+}
+.periodic-table td { 
+    height: 38px; text-align: center; vertical-align: middle; 
+    font-size: 11px; border: 1px solid #e2e8f0; background-color: #fff; 
+    border-radius: 4px; color: #a0aec0; padding: 0;
+    box-sizing: border-box; overflow: hidden;
+}
+.periodic-table td.empty { border: none; background-color: transparent; }
+.periodic-table td.has-data { 
+    background-color: #3498db; color: white; font-weight: bold; 
+    cursor: pointer; border: 1px solid #2980b9; transition: all 0.2s;
+}
+.periodic-table td.has-data:hover { background-color: #2980b9; transform: scale(1.05); }
+.periodic-table td span { display: block; font-size: 9px; font-weight: normal; }
+.lanth-act-space { height: 15px !important; }
+
+/* 周期表の検索ハイライト用 */
+.periodic-table td.has-data.match {
+    background-color: #3498db; 
+    border-color: #2980b9;
+    color: white;
+    box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+}
+.periodic-table td.has-data.no-match {
+    background-color: #f8f9fa; 
+    color: #bdc3c7;
+    border-color: #e2e8f0;
+    pointer-events: none; 
+}
+.periodic-table td.no-data {
+    background-color: #fff !important;
+    color: #a0aec0 !important;
+    border: 1px solid #e2e8f0 !important;
+    pointer-events: none;
+}
+
+/* --- 下段の検索結果テーブル --- */
+.table-responsive { width: 100%; overflow-x: auto; }
+table.result-table { width: 100%; border-collapse: collapse; }
+table.result-table th, table.result-table td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 14px; }
+table.result-table th { background-color: #f8f9fa; font-weight: bold; position: sticky; top: 0; }
+
+.result-box { margin-top: 20px; padding: 15px; background-color: #e8f4fd; border-left: 5px solid #3498db; border-radius: 4px; }
+
+.target-box { background-color: #eaf2f8; padding: 10px 15px; border-radius: 6px; border-left: 4px solid #f39c12; margin-bottom: 15px; }
+.target-box label { color: #d35400; font-size: 15px; }
+.target-box select { border: 2px solid #f39c12; font-weight: bold; color: #2c3e50; }
+
+/* クイズ用スタイル */
+.quiz-question { font-size: 17px; font-weight: bold; color: #2c3e50; line-height: 1.5; background-color: #f1f8ff; padding: 15px; border-radius: 6px; margin-bottom: 20px; border-left: 5px solid #e67e22; }
+.quiz-btn { display: block; width: 100%; padding: 15px; margin-bottom: 10px; background-color: #fff; border: 2px solid #bdc3c7; border-radius: 8px; font-size: 16px; text-align: left; cursor: pointer; transition: 0.2s; color: #333; }
+.quiz-btn:hover:not(:disabled) { border-color: #3498db; background-color: #f4f9fd; }
+.quiz-btn:disabled { cursor: default; }
+.quiz-btn.correct { background-color: #d5f5e3; border-color: #2ecc71; font-weight: bold; }
+.quiz-btn.incorrect { background-color: #fadbd8; border-color: #e74c3c; }
+.quiz-explanation { margin-top: 20px; padding: 15px; background-color: #fcf3cf; border-radius: 6px; border: 1px solid #f1c40f; display: none; }
+
+/* 複数選択フィルター（タグ）用 */
+.filter-group { margin-bottom: 12px; }
+.filter-group label { font-size: 13px; color: #7f8c8d; margin-bottom: 8px; display: block; font-weight: bold; }
+.filter-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.filter-tag {
+    padding: 5px 10px;
+    background-color: #fff;
+    border: 2px solid #bdc3c7;
+    border-radius: 20px;
+    font-size: 13px;
+    color: #7f8c8d;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+    font-weight: bold;
+}
+.filter-tag:hover { border-color: #3498db; color: #3498db; }
+.filter-tag:active { transform: scale(0.95); }
+.filter-tag.active {
+    background-color: #3498db;
+    border-color: #3498db;
+    color: #fff;
+}
+
+/* スマホ等画面が狭い時の縦並び処理 */
+@media (max-width: 850px) {
+    .search-layout { flex-direction: column; }
+    .search-sidebar { flex: none; width: 100%; }
+    .search-main { min-width: 100%; width: 100%; }
+    .periodic-table td { font-size: 9px; height: 30px; }
+}

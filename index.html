@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>放射線技師向け 核種データ＆国試対策ツール</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="nuclide-data.js"></script>
+    <script src="app.js"></script>
+</head>
+<body>
+<div class="container">
+    <h2>放射性核種 統合ナビゲーター</h2>
+    <div class="tabs">
+        <div class="tab active" onclick="switchTab('search-tab')">核種・医薬品検索</div>
+        <div class="tab" onclick="switchTab('calc-tab')">計算ツール</div>
+        <div class="tab" onclick="switchTab('quiz-tab')">国試対策クイズ</div>
+    </div>
+
+    <div id="search-tab" class="panel active">
+        <div class="search-layout">
+            
+            <div class="search-sidebar">
+                <div style="display:flex; gap:6px; margin-bottom:15px;">
+                    <button id="btn-nuclide-mode" class="action-btn primary" onclick="switchSearchMode('nuclide')" style="flex:1; padding:10px; font-size:13px;">⚛️ 核種</button>
+                    <button id="btn-pharma-mode" class="action-btn secondary" onclick="switchSearchMode('pharma')" style="flex:1; padding:10px; background-color:#ecf0f1; color:#7f8c8d; border-color:#bdc3c7; font-size:13px;">💊 医薬品</button>
+                    <button id="btn-detector-mode" class="action-btn secondary" onclick="switchSearchMode('detector')" style="flex:1; padding:10px; background-color:#ecf0f1; color:#7f8c8d; border-color:#bdc3c7; font-size:13px;">📡 検出器</button>
+                </div>
+
+                <div style="background-color:#fdfefe; border:1px solid #e5e8e8; padding:15px; border-radius:6px;">
+                    <label style="font-size: 14px; color: #2c3e50; font-weight: bold; margin-bottom: 12px; display: block;" id="search-title">🔍 核種データベース検索</label>
+                    
+                    <div class="form-group">
+                        <input type="text" id="searchQuery" placeholder="キーワード (例: 骨, β-, 比例)" onkeyup="executeAdvancedSearch()" style="border: 2px solid #3498db;">
+                    </div>
+
+                    <div style="margin-bottom: 15px; padding: 10px 15px; background-color: #f0f8ff; border-radius: 6px; border: 1px solid #cce5ff;">
+                        <label style="font-size: 13px; color: #2980b9; font-weight: bold; margin-bottom: 8px; display: block;">⚙️ 複数タグの絞り込み方法</label>
+                        <div style="display: flex; gap: 15px; font-size: 14px; color: #2c3e50; flex-wrap: wrap;">
+                            <label style="cursor: pointer; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+                                <input type="radio" name="searchLogic" value="and" checked onchange="executeAdvancedSearch()"> 
+                                <strong>すべて満たす</strong> (AND)
+                            </label>
+                            <label style="cursor: pointer; display: flex; align-items: center; gap: 4px; white-space: nowrap;">
+                                <input type="radio" name="searchLogic" value="or" onchange="executeAdvancedSearch()"> 
+                                <strong>いずれか満たす</strong> (OR)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div id="nuclide-filters">
+                        <div class="filter-group">
+                            <label>📌 壊変モード・放出線</label>
+                            <div class="filter-tags" id="mode-filters">
+                                <div class="filter-tag" data-value="α" onclick="toggleFilter(this)">α壊変</div>
+                                <div class="filter-tag" data-value="β-" onclick="toggleFilter(this)">β-壊変</div>
+                                <div class="filter-tag" data-value="β+" onclick="toggleFilter(this)">β+壊変</div>
+                                <div class="filter-tag" data-value="EC" onclick="toggleFilter(this)">EC(電子捕獲)</div>
+                                <div class="filter-tag" data-value="IT" onclick="toggleFilter(this)">IT(核異性体転移)</div>
+                                <div class="filter-tag" data-value="γ" onclick="toggleFilter(this)">γ線放出</div>
+                                <div class="filter-tag" data-value="安定" onclick="toggleFilter(this)">安定同位体</div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>📌 主な用途・分類</label>
+                            <div class="filter-tags" id="usage-filters">
+                                <div class="filter-tag" data-value="PET" onclick="toggleFilter(this)">PET</div>
+                                <div class="filter-tag" data-value="SPECT" onclick="toggleFilter(this)">SPECT</div>
+                                <div class="filter-tag" data-value="治療" onclick="toggleFilter(this)">治療用</div>
+                                <div class="filter-tag" data-value="較正" onclick="toggleFilter(this)">較正線源</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="pharma-filters" style="display:none;">
+                        <div class="filter-group">
+                            <label>📌 対象部位</label>
+                            <div class="filter-tags" id="organ-filters">
+                                <div class="filter-tag" data-value="脳" onclick="toggleFilter(this)">脳</div>
+                                <div class="filter-tag" data-value="心" onclick="toggleFilter(this)">心臓</div>
+                                <div class="filter-tag" data-value="骨" onclick="toggleFilter(this)">骨</div>
+                                <div class="filter-tag" data-value="肺" onclick="toggleFilter(this)">肺</div>
+                                <div class="filter-tag" data-value="腎" onclick="toggleFilter(this)">腎臓</div>
+                                <div class="filter-tag" data-value="肝" onclick="toggleFilter(this)">肝・胆道</div>
+                                <div class="filter-tag" data-value="腫瘍" onclick="toggleFilter(this)">腫瘍</div>
+                                <div class="filter-tag" data-value="治療" onclick="toggleFilter(this)">RI内用療法</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="detector-filters" style="display:none;">
+                        <div class="filter-group">
+                            <label>📌 検出器の種類</label>
+                            <div class="filter-tags" id="det-category-filters">
+                                <div class="filter-tag" data-value="気体電離" onclick="toggleFilter(this)">気体電離</div>
+                                <div class="filter-tag" data-value="シンチ" onclick="toggleFilter(this)">シンチレーション</div>
+                                <div class="filter-tag" data-value="半導体" onclick="toggleFilter(this)">半導体</div>
+                                <div class="filter-tag" data-value="蓄積発光" onclick="toggleFilter(this)">蓄積・発光</div>
+                                <div class="filter-tag" data-value="中性子" onclick="toggleFilter(this)">中性子</div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
+                            <label>📌 測定対象 (線種)</label>
+                            <div class="filter-tags" id="det-radiation-filters">
+                                <div class="filter-tag" data-value="α" onclick="toggleFilter(this)">α線</div>
+                                <div class="filter-tag" data-value="β" onclick="toggleFilter(this)">β線</div>
+                                <div class="filter-tag" data-value="γ" onclick="toggleFilter(this)">γ線</div>
+                                <div class="filter-tag" data-value="X" onclick="toggleFilter(this)">X線</div>
+                                <div class="filter-tag" data-value="中性子" onclick="toggleFilter(this)">中性子</div>
+                            </div>
+                        </div>
+                        <div style="display:flex; gap: 10px;">
+                            <div class="filter-group" style="flex:1;">
+                                <label>📌 エネルギー測定</label>
+                                <div class="filter-tags" id="det-energy-filters">
+                                    <div class="filter-tag" data-value="○" onclick="toggleFilter(this)">○ (可能)</div>
+                                    <div class="filter-tag" data-value="△" onclick="toggleFilter(this)">△ (一部)</div>
+                                    <div class="filter-tag" data-value="×" onclick="toggleFilter(this)">× (不可)</div>
+                                </div>
+                            </div>
+                            <div class="filter-group" style="flex:1;">
+                                <label>📌 カウント(計数)</label>
+                                <div class="filter-tags" id="det-count-filters">
+                                    <div class="filter-tag" data-value="○" onclick="toggleFilter(this)">○ (可能)</div>
+                                    <div class="filter-tag" data-value="×" onclick="toggleFilter(this)">× (不可)</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="action-btn secondary" onclick="resetSearch()" style="margin-top:10px;">🔄 条件をリセット</button>
+                </div>
+            </div>
+
+            <div class="search-main">
+                <div class="periodic-table-container">
+                    <div class="periodic-title">周期表 (検索結果と連動)</div>
+                    <table class="periodic-table">
+                        <tbody>
+                            <tr><td>H</td><td colspan="16" class="empty"></td><td>He</td></tr>
+                            <tr><td>Li</td><td>Be</td><td colspan="10" class="empty"></td><td>B</td><td>C</td><td>N</td><td>O</td><td>F</td><td>Ne</td></tr>
+                            <tr><td>Na</td><td>Mg</td><td colspan="10" class="empty"></td><td>Al</td><td>Si</td><td>P</td><td>S</td><td>Cl</td><td>Ar</td></tr>
+                            <tr><td>K</td><td>Ca</td><td>Sc</td><td>Ti</td><td>V</td><td>Cr</td><td>Mn</td><td>Fe</td><td>Co</td><td>Ni</td><td>Cu</td><td>Zn</td><td>Ga</td><td>Ge</td><td>As</td><td>Se</td><td>Br</td><td>Kr</td></tr>
+                            <tr><td>Rb</td><td>Sr</td><td>Y</td><td>Zr</td><td>Nb</td><td>Mo</td><td>Tc</td><td>Ru</td><td>Rh</td><td>Pd</td><td>Ag</td><td>Cd</td><td>In</td><td>Sn</td><td>Sb</td><td>Te</td><td>I</td><td>Xe</td></tr>
+                            <tr><td>Cs</td><td>Ba</td><td class="empty" style="font-size:10px;">La-Lu</td><td>Hf</td><td>Ta</td><td>W</td><td>Re</td><td>Os</td><td>Ir</td><td>Pt</td><td>Au</td><td>Hg</td><td>Tl</td><td>Pb</td><td>Bi</td><td>Po</td><td>At</td><td>Rn</td></tr>
+                            <tr><td>Fr</td><td>Ra</td><td class="empty" style="font-size:10px;">Ac-Lr</td><td>Rf</td><td>Db</td><td>Sg</td><td>Bh</td><td>Hs</td><td>Mt</td><td>Ds</td><td>Rg</td><td>Cn</td><td>Nh</td><td>Fl</td><td>Mc</td><td>Lv</td><td>Ts</td><td>Og</td></tr>
+                            <tr><td colspan="18" class="empty lanth-act-space"></td></tr>
+                            <tr><td colspan="3" class="empty"></td><td>La</td><td>Ce</td><td>Pr</td><td>Nd</td><td>Pm</td><td>Sm</td><td>Eu</td><td>Gd</td><td>Tb</td><td>Dy</td><td>Ho</td><td>Er</td><td>Tm</td><td>Yb</td><td>Lu</td></tr>
+                            <tr><td colspan="3" class="empty"></td><td>Ac</td><td>Th</td><td>Pa</td><td>U</td><td>Np</td><td>Pu</td><td>Am</td><td>Cm</td><td>Bk</td><td>Cf</td><td>Es</td><td>Fm</td><td>Md</td><td>No</td><td>Lr</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="searchResult" class="table-responsive" style="margin-top: 25px; padding-top: 20px; border-top: 2px dashed #bdc3c7;">
+            <p style="color:#7f8c8d; text-align:center;">検索条件を設定するか、上の元素をタップしてください。</p>
+        </div>
+
+    </div>
+
+    <div id="calc-tab" class="panel">
+        <div class="form-group" style="background-color:#f8f9fa; padding:15px; border-radius:6px; border:1px solid #ccc; margin-bottom:20px;">
+            <label for="calcType" style="color:#2c3e50;">📊 計算メニューを選択</label>
+            <select id="calcType" onchange="switchCalcForm()" style="border:2px solid #3498db; font-weight:bold; margin-bottom:8px;">
+                <option value="decay">1. 放射能の減衰計算</option>
+                <option value="shielding">2. 遮へい計算</option>
+                <option value="dose">3. 空間線量率の計算</option>
+                <option value="effHl">4. 実効半減期の計算</option>
+                <option value="deadTime">5. GM管 数え落とし補正</option>
+                <option value="equilibrium">6. 放射平衡</option>
+                <option value="specAct">7. 無担体RIの比放射能</option>
+                <option value="stat">8. 計数統計の誤差計算</option>
+                <option value="energyRes">9. エネルギー分解能</option>
+                <option value="wValue">10. 電離箱のW値</option>
+                <option value="braggGray">11. ブラッグ・グレイ空洞原理</option>
+                <option value="twoSource">12. 分解時間の算出 [2線源法]</option>
+                <option value="activation">13. 放射化量の計算</option>
+                <option value="injectionVol">14. 投与液量(mL)の減衰吸い上げ計算</option>
+                <option value="molyBreakthrough">15. Mo-99 ブレークスルー試験判定</option>
+                <option value="suvCalc">16. PET：SUV(標準物取り込み値)計算</option>
+            </select>
+        </div>
+
+        <div id="form-decay" class="calc-form-group">
+            <div class="target-box">
+                <label>求める値:</label>
+                <select onchange="toggleInputs('decay')">
+                    <option value="A">経過後の放射能 (A)</option>
+                    <option value="A0">初期の放射能 (A₀)</option>
+                    <option value="t">経過時間 (t)</option>
+                    <option value="T">半減期 (T)</option>
+                </select>
+            </div>
+            <div id="decayNuclideBox" class="form-group">
+                <label>核種を選択 (半減期を自動入力):</label>
+                <select id="calcNuclide" onchange="updateDecayHalfLife()">
+                    <option value="">-- 手動入力 --</option>
+                </select>
+            </div>
+            <div class="form-group input-wrap" data-var="T">
+                <label>半減期 (T):</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="decayHalfLife" placeholder="例: 6">
+                    <select id="decayHalfLifeUnit" style="width:80px;">
+                        <option value="秒">秒</option><option value="分">分</option><option value="時間" selected>時間</option><option value="日">日</option><option value="年">年</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group input-wrap" data-var="t">
+                <label>経過時間 (t):</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="decayT" placeholder="例: 12">
+                    <select id="decayTUnit" style="width:80px;">
+                        <option value="秒">秒</option><option value="分">分</option><option value="時間" selected>時間</option><option value="日">日</option><option value="年">年</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group input-wrap" data-var="A0">
+                <label>初期の放射能 A₀ (MBq):</label>
+                <input type="number" id="decayA0" placeholder="例: 100">
+            </div>
+            <div class="form-group input-wrap" data-var="A">
+                <label>経過後の放射能 A (MBq):</label>
+                <input type="number" id="decayA" placeholder="例: 25">
+            </div>
+        </div>
+
+        <div id="form-shielding" class="calc-form-group" style="display:none;">
+            <div class="target-box">
+                <label>求める値:</label>
+                <select onchange="toggleInputs('shielding')">
+                    <option value="x">必要な遮へい厚 (x)</option>
+                    <option value="I">透過後の線量率 (I)</option>
+                    <option value="I0">入射時の線量率 (I₀)</option>
+                    <option value="hvl">半価層 (HVL)</option>
+                </select>
+            </div>
+            <div class="form-group input-wrap" data-var="hvl">
+                <label>半価層 HVL (mm 等):</label>
+                <input type="number" id="shieldHvl" placeholder="例: 2.5">
+            </div>
+            <div class="form-group input-wrap" data-var="x">
+                <label>遮へい体の厚さ x (mm 等):</label>
+                <input type="number" id="shieldX" placeholder="例: 10">
+            </div>
+            <div class="form-group input-wrap" data-var="I0">
+                <label>入射線量率 I₀:</label>
+                <input type="number" id="shieldI0" placeholder="例: 100">
+            </div>
+            <div class="form-group input-wrap" data-var="I">
+                <label>透過後の線量率 I:</label>
+                <input type="number" id="shieldI" placeholder="例: 6.25">
+            </div>
+        </div>
+
+        <div id="form-dose" class="calc-form-group" style="display:none;">
+            <div class="target-box">
+                <label>求める値:</label>
+                <select onchange="toggleInputs('dose')">
+                    <option value="D">空間線量率 (D)</option>
+                    <option value="A">放射能 (A)</option>
+                    <option value="r">距離 (r)</option>
+                    <option value="gamma">実効線量率定数 (Γ)</option>
+                </select>
+            </div>
+            <div class="form-group input-wrap" data-var="gamma">
+                <label>実効線量率定数 Γ (μSv·m²/MBq·h):</label>
+                <input type="number" id="doseGamma" placeholder="例: 0.035 (Co-60など)">
+            </div>
+            <div class="form-group input-wrap" data-var="A">
+                <label>放射能 A (MBq):</label>
+                <input type="number" id="doseA" placeholder="例: 1000">
+            </div>
+            <div class="form-group input-wrap" data-var="r">
+                <label>距離 r (m):</label>
+                <input type="number" id="doseR" placeholder="例: 2">
+            </div>
+            <div class="form-group input-wrap" data-var="D">
+                <label>空間線量率 D (μSv/h):</label>
+                <input type="number" id="doseD" placeholder="例: 8.75">
+            </div>
+        </div>
+
+        <div id="form-effHl" class="calc-form-group" style="display:none;">
+            <div class="target-box">
+                <label>求める値:</label>
+                <select onchange="toggleInputs('effHl')">
+                    <option value="Teff">実効半減期 (Teff)</option>
+                    <option value="Tp">物理的半減期 (Tp)</option>
+                    <option value="Tb">生物学的半減期 (Tb)</option>
+                </select>
+            </div>
+            <div class="form-group input-wrap" data-var="Tp">
+                <label>物理的半減期 (Tp):</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="effTp" placeholder="例: 8">
+                    <select id="effTpUnit" style="width:80px;"><option value="秒">秒</option><option value="分">分</option><option value="時間">時間</option><option value="日" selected>日</option><option value="年">年</option></select>
+                </div>
+            </div>
+            <div class="form-group input-wrap" data-var="Tb">
+                <label>生物学的半減期 (Tb):</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="effTb" placeholder="例: 24">
+                    <select id="effTbUnit" style="width:80px;"><option value="秒">秒</option><option value="分">分</option><option value="時間">時間</option><option value="日" selected>日</option><option value="年">年</option></select>
+                </div>
+            </div>
+            <div class="form-group input-wrap" data-var="Teff">
+                <label>実効半減期 (Teff):</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="effTeff" placeholder="例: 6">
+                    <select id="effTeffUnit" style="width:80px;"><option value="秒">秒</option><option value="分">分</option><option value="時間">時間</option><option value="日" selected>日</option><option value="年">年</option></select>
+                </div>
+            </div>
+        </div>
+
+        <div id="form-deadTime" class="calc-form-group" style="display:none;">
+            <div class="target-box">
+                <label>求める値:</label>
+                <select onchange="toggleInputs('deadTime')">
+                    <option value="n">真の計数率 (n)</option>
+                    <option value="n0">測定された計数率 (n₀)</option>
+                    <option value="tau">分解時間 (τ)</option>
+                </select>
+            </div>
+            <div class="form-group input-wrap" data-var="n0">
+                <label>測定された計数率 n₀ (cps):</label>
+                <input type="number" id="dtN0" placeholder="例: 500">
+            </div>
+            <div class="form-group input-wrap" data-var="n">
+                <label>真の計数率 n (cps):</label>
+                <input type="number" id="dtN" placeholder="例: 550">
+            </div>
+            <div class="form-group input-wrap" data-var="tau">
+                <label>分解時間 τ (μs):</label>
+                <input type="number" id="dtTau" placeholder="例: 200">
+            </div>
+        </div>
+
+        <div id="form-equilibrium" class="calc-form-group" style="display:none;">
+            <div class="target-box">
+                <label>求める値:</label>
+                <select onchange="toggleInputs('equilibrium')">
+                    <option value="Ad">時間 t での娘核種の放射能 (Ad)</option>
+                    <option value="A0">初期の親核種の放射能 (A₀)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>親核種の半減期 (Tp):</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="eqTp" placeholder="例: 66">
+                    <select id="eqTpUnit" style="width:80px;"><option value="秒">秒</option><option value="分">分</option><option value="時間" selected>時間</option><option value="日">日</option><option value="年">年</option></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>娘核種の半減期 (Td):</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="eqTd" placeholder="例: 6">
+                    <select id="eqTdUnit" style="width:80px;"><option value="秒">秒</option><option value="分">分</option><option value="時間" selected>時間</option><option value="日">日</option><option value="年">年</option></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>経過時間 (t):</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="eqTime" placeholder="例: 24">
+                    <select id="eqTimeUnit" style="width:80px;"><option value="秒">秒</option><option value="分">分</option><option value="時間" selected>時間</option><option value="日">日</option><option value="年">年</option></select>
+                </div>
+            </div>
+            <div class="form-group input-wrap" data-var="A0">
+                <label>初期の親核種放射能 A₀ (MBq):</label>
+                <input type="number" id="eqA0" placeholder="例: 100">
+            </div>
+            <div class="form-group input-wrap" data-var="Ad">
+                <label>娘核種放射能 Ad (MBq):</label>
+                <input type="number" id="eqAd" placeholder="例: 80">
+            </div>
+        </div>
+
+        <div id="form-specAct" class="calc-form-group" style="display:none;">
+            <div class="target-box">
+                <label>求める値:</label>
+                <select onchange="toggleInputs('specAct')">
+                    <option value="As">比放射能 (TBq/g)</option>
+                    <option value="M">質量数 (g/mol)</option>
+                    <option value="T">半減期 (T)</option>
+                </select>
+            </div>
+            <div class="form-group input-wrap" data-var="T">
+                <label>半減期 (T):</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="saT" placeholder="例: 8">
+                    <select id="saTUnit" style="width:80px;"><option value="秒">秒</option><option value="分">分</option><option value="時間">時間</option><option value="日" selected>日</option><option value="年">年</option></select>
+                </div>
+            </div>
+            <div class="form-group input-wrap" data-var="M">
+                <label>質量数 M (g/mol):</label>
+                <input type="number" id="saM" placeholder="例: 131">
+            </div>
+            <div class="form-group input-wrap" data-var="As">
+                <label>比放射能 As (TBq/g):</label>
+                <input type="number" id="saAs" placeholder="例: 4600">
+            </div>
+        </div>
+
+        <div id="form-stat" class="calc-form-group" style="display:none;">
+            <div class="form-group"><label>試料の総計数 (Ns):</label><input type="number" id="statNs" placeholder="例: 10000"></div>
+            <div class="form-group"><label>試料の測定時間 ts (分等):</label><input type="number" id="statTs" placeholder="例: 10"></div>
+            <div class="form-group"><label>バックグラウンド総計数 (Nb):</label><input type="number" id="statNb" placeholder="例: 400"></div>
+            <div class="form-group"><label>BGの測定時間 tb (分等):</label><input type="number" id="statTb" placeholder="例: 10"></div>
+        </div>
+
+        <div id="form-energyRes" class="calc-form-group" style="display:none;">
+            <div class="target-box">
+                <label>求める値:</label>
+                <select onchange="toggleInputs('energyRes')">
+                    <option value="R">分解能 R (%)</option>
+                    <option value="deltaE">半値幅 ΔE</option>
+                    <option value="E">ピークエネルギー E</option>
+                </select>
+            </div>
+            <div class="form-group input-wrap" data-var="deltaE">
+                <label>半値幅 ΔE (keV等):</label>
+                <input type="number" id="erDelta" placeholder="例: 50">
+            </div>
+            <div class="form-group input-wrap" data-var="E">
+                <label>ピークエネルギー E (keV等):</label>
+                <input type="number" id="erE" placeholder="例: 662">
+            </div>
+            <div class="form-group input-wrap" data-var="R">
+                <label>エネルギー分解能 R (%):</label>
+                <input type="number" id="erR" placeholder="例: 7.5">
+            </div>
+        </div>
+
+        <div id="form-wValue" class="calc-form-group" style="display:none;">
+            <div class="target-box">
+                <label>求める値:</label>
+                <select onchange="toggleInputs('wValue')">
+                    <option value="Q">生成電荷量 Q (C)</option>
+                    <option value="E">吸収エネルギー E (MeV)</option>
+                    <option value="W">W値 (eV)</option>
+                </select>
+            </div>
+            <div class="form-group input-wrap" data-var="E">
+                <label>吸収エネルギー E (MeV):</label>
+                <input type="number" id="wvE" placeholder="例: 5">
+            </div>
+            <div class="form-group input-wrap" data-var="W">
+                <label>気体のW値 (eV):</label>
+                <input type="number" id="wvW" placeholder="空気の場合 約34">
+            </div>
+            <div class="form-group input-wrap" data-var="Q">
+                <label>生成電荷量 Q (C):</label>
+                <input type="number" id="wvQ" placeholder="例: 2.3e-14">
+            </div>
+        </div>
+
+        <div id="form-braggGray" class="calc-form-group" style="display:none;">
+            <div class="target-box">
+                <label>求める値:</label>
+                <select onchange="toggleInputs('braggGray')">
+                    <option value="Dm">壁(物質)の吸収線量 Dm</option>
+                    <option value="Dg">空洞(気体)の吸収線量 Dg</option>
+                    <option value="Smg">質量阻止能比 Sm,g</option>
+                </select>
+            </div>
+            <div class="form-group input-wrap" data-var="Dg">
+                <label>空洞(気体)の吸収線量 Dg (Gy):</label>
+                <input type="number" id="bgDg" placeholder="例: 0.1">
+            </div>
+            <div class="form-group input-wrap" data-var="Smg">
+                <label>質量阻止能比 Sm,g:</label>
+                <input type="number" id="bgSmg" placeholder="例: 1.1">
+            </div>
+            <div class="form-group input-wrap" data-var="Dm">
+                <label>壁(物質)の吸収線量 Dm (Gy):</label>
+                <input type="number" id="bgDm" placeholder="例: 0.11">
+            </div>
+        </div>
+
+        <div id="form-twoSource" class="calc-form-group" style="display:none;">
+            <div class="form-group"><label>線源1の計数率 n₁ (cps):</label><input type="number" id="tsN1" placeholder="例: 800"></div>
+            <div class="form-group"><label>線源2の計数率 n₂ (cps):</label><input type="number" id="tsN2" placeholder="例: 900"></div>
+            <div class="form-group"><label>線源1+2の計数率 n₁₂ (cps):</label><input type="number" id="tsN12" placeholder="例: 1650"></div>
+            <div class="form-group"><label>BGの計数率 nb (cps) ※省略可:</label><input type="number" id="tsNb" placeholder="0" value="0"></div>
+        </div>
+
+        <div id="form-activation" class="calc-form-group" style="display:none;">
+            <div class="target-box">
+                <label>求める値:</label>
+                <select onchange="toggleInputs('activation')">
+                    <option value="A">生成放射能 A (Bq)</option>
+                    <option value="sigma">反応断面積 σ (barn)</option>
+                </select>
+            </div>
+            <div class="form-group input-wrap" data-var="sigma">
+                <label>反応断面積 σ (barn):</label>
+                <input type="number" id="actSigma" placeholder="例: 1.5">
+            </div>
+            <div class="form-group input-wrap" data-var="f">
+                <label>線束密度 f (n/cm²/s):</label>
+                <input type="number" id="actF" placeholder="例: 1e13">
+            </div>
+            <div class="form-group input-wrap" data-var="N">
+                <label>ターゲットの原子数 N:</label>
+                <input type="number" id="actN" placeholder="例: 6.02e23">
+            </div>
+            <div class="form-group">
+                <label>生成核種の半減期 T:</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="actT" placeholder="例: 14">
+                    <select id="actTUnit" style="width:80px;"><option value="秒">秒</option><option value="分">分</option><option value="時間">時間</option><option value="日" selected>日</option><option value="年">年</option></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label>照射時間 t:</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="number" id="actTime" placeholder="例: 7">
+                    <select id="actTimeUnit" style="width:80px;"><option value="秒">秒</option><option value="分">分</option><option value="時間">時間</option><option value="日" selected>日</option><option value="年">年</option></select>
+                </div>
+            </div>
+
+            <div class="form-group input-wrap" data-var="A">
+                <label>生成放射能 A (Bq):</label>
+                <input type="number" id="actA" placeholder="例: 1000000">
+            </div>
+        </div>
+
+        <div id="form-injectionVol" class="calc-form-group" style="display:none;">
+            <div class="form-group">
+                <label>使用核種 (プリセット半減期):</label>
+                <select id="injHalfLife" style="background-color:#f8f9fa;">
+                    <option value="361.2">99mTc (6.02時間 / 361.2分)</option>
+                    <option value="109.8">18F (109.8分)</option>
+                    <option value="792">123I (13.2時間)</option>
+                    <option value="4694.4">67Ga (3.26日)</option>
+                </select>
+            </div>
+            <div class="form-group"><label>検定日時の総放射能 (MBq):</label><input type="number" id="injAcal" placeholder="例: 185"></div>
+            <div class="form-group"><label>検定日時のバイアル総液量 (mL):</label><input type="number" id="injVcal" placeholder="例: 2.0"></div>
+            <div class="form-group"><label>検定時刻から「実際の投与」までの経過時間 (分):</label><input type="number" id="injTime" placeholder="例: 150 (2時間半後)"></div>
+            <div class="form-group"><label>患者への目標投与量 (MBq):</label><input type="number" id="injTargetA" placeholder="例: 148"></div>
+        </div>
+
+        <div id="form-molyBreakthrough" class="calc-form-group" style="display:none;">
+            <div class="form-group"><label>溶出した99mTcの総放射能 (MBq):</label><input type="number" id="mbTc" placeholder="例: 4000"></div>
+            <div class="form-group"><label>アッセイで測定された99Moの放射能 (kBq):</label><input type="number" id="mbMo" placeholder="例: 0.4"></div>
+            <p class="calc-hint" style="color:#7f8c8d; font-size:12px;">※法令基準：Tc 1MBqあたり Mo 0.15kBq 以下（かつ総量0.015%以下）</p>
+        </div>
+
+        <div id="form-suvCalc" class="calc-form-group" style="display:none;">
+            <div class="form-group"><label>病変部ROIの組織放射能濃度 (kBq/mL):</label><input type="number" id="suvCtissue" placeholder="例: 15"></div>
+            <div class="form-group"><label>18F-FDG 当初の注射投与量 (MBq):</label><input type="number" id="suvAinj" placeholder="例: 185"></div>
+            <div class="form-group"><label>注射からPET撮像までの待機時間 (分):</label><input type="number" id="suvTime" placeholder="例: 60 (標準1時間待機)"></div>
+            <div class="form-group"><label>患者の体重 (kg):</label><input type="number" id="suvWeight" placeholder="例: 60"></div>
+        </div>
+
+        <button class="action-btn primary" onclick="runSelectedCalc()">計算する</button>
+
+        <div id="calcResult" class="result-box" style="display:none;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <label style="margin:0;">⚙ 表示桁数:</label>
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <input type="range" id="digitSlider" min="1" max="10" value="3" oninput="updateDisplayDigits(this.value)">
+                    <span id="digitDisplay" style="font-weight:bold; color:#e67e22; width:40px;">3桁</span>
+                </div>
+            </div>
+            <div id="calcProcessArea"></div>
+            <div id="calcAnswerArea"></div>
+        </div>
+    </div>
+
+    <div id="quiz-tab" class="panel">
+        <div id="quiz-start-screen">
+            <h3 style="text-align:center; color:#2c3e50;">💡 国試対策クイズ</h3>
+            <div class="form-group" style="background-color: #f8f9fa; padding: 15px; border-radius: 6px; border: 1px solid #ccc;">
+                <label style="color:#2c3e50;">📚 出題ジャンル</label>
+                <select id="quizGenre" style="border: 2px solid #e67e22; font-weight: bold;">
+                    <option value="random">ランダム（全ジャンル）</option>
+                    <option value="target_radiation">特定の放射線を放出する核種</option>
+                    <option value="mode_combination">壊変形式の組合せ</option>
+                    <option value="halflife_combination">半減期の組合せ</option>
+                    <option value="pharma_combination">核医学（医薬品・対象臓器・集積機序）</option>
+                    <option value="original_4choice">🌟 国試形式・オリジナル4択問題</option>
+                </select>
+            </div>
+            <button class="action-btn primary" onclick="startQuiz()" style="font-size:18px; padding:15px; margin-top:10px;">クイズを開始する 🚀</button>
+        </div>
+        
+        <div id="quiz-play-screen" style="display:none;">
+            <p id="quizProgress" style="font-weight: bold; color: #e67e22; text-align: center; margin-bottom: 15px; font-size: 18px;"></p>
+            <div id="quizQuestion" class="quiz-question"></div>
+            <div id="quizOptions"></div>
+            <div id="quizExplanation" class="quiz-explanation"></div>
+            <button class="action-btn" onclick="abortQuiz()" style="margin-top:20px; background-color:#7f8c8d; color:white;">中断する</button>
+            <button class="action-btn" id="nextQuizBtn" onclick="nextQuiz()" style="margin-top:10px; display:none; background-color:#3498db; color:white;">次の問題へ ➔</button>
+        </div>
+
+        <div id="quiz-result-screen" style="display:none;">
+            <h3 style="text-align:center; color:#2c3e50;">結果発表</h3>
+            <div style="background-color:#f1f8ff; padding:20px; border-radius:8px; text-align:center; border:2px solid #3498db; margin-bottom:20px;">
+                <p style="margin:0; font-size:16px; color:#555;">あなたの正解数は...</p>
+                <p id="quizScore" style="margin:10px 0 0 0; font-size:32px; font-weight:bold; color:#e74c3c;"></p>
+            </div>
+            <h4 style="margin-bottom:10px;">復習エリア</h4>
+            <div id="quizReviewArea"></div>
+            <button class="action-btn primary" onclick="resetQuiz()" style="margin-top:20px;">もう一度挑戦する</button>
+        </div>
+    </div>
+
+</div>
+</body>
+</html>
