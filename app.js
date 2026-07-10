@@ -122,8 +122,7 @@ function executeAdvancedSearch() {
             
             if (!q) matchQuery = true;
             else if (isExactElement) {
-                let extracted = p.nuclide.match(/[A-Z][a-z]?/g) || [];
-                matchQuery = extracted.includes(exactSym);
+                matchQuery = (p.nuclide === exactSym || p.drugName.startsWith(exactSym + '-'));
             } else {
                 matchQuery = (p.organ.includes(q) || p.drugName.toLowerCase().includes(q.toLowerCase()) || p.nuclide.toLowerCase().includes(q.toLowerCase()) || p.disease.some(d => d.includes(q)));
             }
@@ -132,26 +131,32 @@ function executeAdvancedSearch() {
             
             let matchOrgan = true;
             if (selectedOrgans.length > 0) {
-                let organChecks = selectedOrgans.map(o => p.category.includes(o));
+                let organChecks = selectedOrgans.map(o => p.category.includes(o) || p.organ.includes(o));
                 matchOrgan = searchLogic === 'and' ? organChecks.every(chk => chk) : organChecks.some(chk => chk);
             }
             
             return matchQuery && matchType && matchOrgan;
         });
 
-        // テーブルのヘッダと順序を変更
-        let html = res.length ? `<h3>検索結果: ${res.length} 件</h3><table class="result-table"><thead><tr><th style="min-width:60px;">部位</th><th style="min-width:160px;">放射性医薬品 (薬剤名)</th><th style="min-width:100px;">対象疾患</th><th>投与方法・特記事項</th><th>集積機序 (メカニズム)</th></tr></thead><tbody>` : '<p style="color:red;text-align:center;font-weight:bold;">見つかりません</p>';
+        // テーブルヘッダーと表示順の変更（使用核種を削除、指定された順序へ）
+        let html = res.length ? `<h3>検索結果: ${res.length} 件</h3><table class="result-table"><thead><tr><th style="min-width:60px;">部位</th><th style="min-width:180px;">放射性医薬品 (薬剤名)</th><th style="min-width:120px;">対象疾患</th><th>投与方法・特記事項</th><th>集積機序 (メカニズム)</th></tr></thead><tbody>` : '<p style="color:red;text-align:center;font-weight:bold;">見つかりません</p>';
         let matchedElements = [];
         res.forEach(p => {
-            let match = p.nuclide.match(/[A-Z][a-z]?/g); 
-            if (match) match.forEach(m => matchedElements.push(m));
+            matchedElements.push(p.nuclide);
             
-            let diseaseHtml = `<ul style="margin:0; padding-left:18px;">` + p.disease.map(d => `<li>${d}</li>`).join('') + `</ul>`;
+            // 箇条書きHTMLの生成
+            let diseaseHtml = `<ul style="margin:0; padding-left:16px; line-height:1.4;">` + p.disease.map(d => `<li>${d}</li>`).join('') + `</ul>`;
             
+            // 薬剤名表示ロジック（核種部分の強調と臨床名のドッキング）
+            let boldDrugName = p.drugName.replace(p.nuclide, `<strong style="color:#2980b9; font-size:16px;">${p.nuclide}</strong>`);
+            if (p.clinicalName) {
+                boldDrugName += `<br><span style="font-size:12px; color:#555; font-weight:normal;">（臨床名: ${p.clinicalName}）</span>`;
+            }
+
             html += `<tr>
-                <td style="font-weight:bold; color:#2c3e50;">${p.organ}</td>
-                <td><span style="color:#2980b9; font-weight:bold; font-size:15px;">${p.nuclide}</span> <span style="font-size:13px; color:#555;">(${p.drugName})</span></td>
-                <td style="font-size:13px; line-height:1.4; color:#27ae60; font-weight:bold;">${diseaseHtml}</td>
+                <td style="font-weight:bold; color:#2c3e50; font-size:15px;">${p.organ}</td>
+                <td style="font-weight:bold;">${boldDrugName}</td>
+                <td style="color:#27ae60; font-weight:bold;">${diseaseHtml}</td>
                 <td style="font-size:12px; line-height:1.4; color:#7f8c8d;">${p.notes || '-'}</td>
                 <td style="font-size:13px; line-height:1.4;">${p.mechanism}</td>
             </tr>`;
@@ -183,14 +188,12 @@ function executeAdvancedSearch() {
             return matchQuery && matchTags;
         });
 
-        // 🌟 初期状態でも全件表示されるように変更しました
         let html = res.length ? `<h3>検索結果: ${res.length} 件</h3><table class="result-table"><thead><tr><th style="min-width:110px;">検出器の種類</th><th style="min-width:60px;">主な線種</th><th style="min-width:45px;">エネ</th><th style="min-width:45px;">計数</th><th>主な特徴・原理・用途</th></tr></thead><tbody>` : '<p style="color:red;text-align:center;font-weight:bold;">見つかりません</p>';
         res.forEach(d => {
             html += `<tr><td style="font-weight:bold; color:#2c3e50;">${d.name}</td><td style="font-size:13px; color:#c0392b; font-weight:bold;">${d.radiation}</td><td style="text-align:center; font-weight:bold; color:${d.energy==='○'?'#27ae60':(d.energy==='×'?'#e74c3c':'#f39c12')};">${d.energy}</td><td style="text-align:center; font-weight:bold; color:${d.count==='○'?'#27ae60':(d.count==='×'?'#e74c3c':'#f39c12')};">${d.count}</td><td style="font-size:13px; line-height:1.5;">${d.desc}</td></tr>`;
         });
         document.getElementById('searchResult').innerHTML = html + (res.length ? '</tbody></table>' : '');
 
-        // 🌟 周期表の制御（こちらは前回の仕様通り、線種が選ばれるまで光りません）
         let matchedElements = [];
         if (selectedRad.length > 0) {
             FLAT_ALL_ISOTOPES.forEach(i => {
@@ -200,22 +203,13 @@ function executeAdvancedSearch() {
                 if (selectedRad.includes('γ') && ((i.mode && i.mode.includes('γ')) || (i.energy && i.energy.includes('γ')))) match = true;
                 if (selectedRad.includes('X') && i.mode && (i.mode.includes('EC') || i.mode.includes('IT'))) match = true;
                 if (selectedRad.includes('中性子') && (i.element === 'Cf' || (i.other && i.other.includes('中性子')) || (i.other && i.other.includes('自発核分裂')))) match = true;
-                
-                if (match) {
-                    matchedElements.push(i.element);
-                }
+                if (match) matchedElements.push(i.element);
             });
         }
-        
-        // 選ばれていない時、または該当がない時はダミー("_NONE_")を渡してすべてグレーアウトさせる
-        if (matchedElements.length === 0) {
-            matchedElements.push("_NONE_");
-        }
-
+        if (matchedElements.length === 0) matchedElements.push("_NONE_");
         highlightPeriodic([...new Set(matchedElements)]);
     }
 }
-
 
 function highlightPeriodic(matchedElements) {
     document.querySelectorAll('.periodic-table td.has-data').forEach(td => {
@@ -229,7 +223,6 @@ function highlightPeriodic(matchedElements) {
 function clickPeriodic(sym) { document.getElementById('searchQuery').value = sym; executeAdvancedSearch(); }
 function resetSearch() { document.getElementById('searchQuery').value = ''; document.querySelectorAll('.filter-tag').forEach(el => el.classList.remove('active')); executeAdvancedSearch(); }
 function toggleFilter(el) { el.classList.toggle('active'); executeAdvancedSearch(); }
-
 
 // --- 計算システム ---
 function getSeconds(v, u) { return u==='秒'?v : u==='分'?v*60 : u==='時間'?v*3600 : u==='日'?v*86400 : v*31536000; }
@@ -260,7 +253,6 @@ function updateDisplayDigits(val) {
     if(document.getElementById('calcResult').style.display === 'block') runSelectedCalc();
 }
 
-// 👑 16項目対応の放射線計算エンジン
 function runSelectedCalc() {
     const type = document.getElementById('calcType').value;
     const targetSel = document.querySelector(`#form-${type} .target-box select`);
@@ -385,7 +377,7 @@ function runSelectedCalc() {
             let N = Number(document.getElementById('actN').value); let A = Number(document.getElementById('actA').value);
             let T_s = getSeconds(Number(document.getElementById('actT').value), document.getElementById('actTUnit').value);
             let t_s = getSeconds(Number(document.getElementById('actTime').value), document.getElementById('actTimeUnit').value);
-            if(target === 'A') { processText = `A = N·σ·f × (1 - (1/2)^(t/T))`; answerText = `${fmt(N * (sig_b*1e-24) * f * (1 - Math.pow(0.5, t_s/T_s)))} Bq`; }
+            if(target === 'A') { res = N * (sig_b*1e-24) * f * (1 - Math.pow(0.5, t_s/T_s)); processText = `A = N·σ·f × (1 - (1/2)^(t/T))`; answerText = `${fmt(res)} Bq`; }
             else { let grow = 1 - Math.pow(0.5, t_s/T_s); if(grow===0){answerText="時間短すぎ";break;} processText = `σ = (A / 減衰項) / (N × f)`; answerText = `${fmt(((A/grow)/(N*f))*1e24)} barn`; }
             break;
         }
@@ -423,49 +415,16 @@ function runSelectedCalc() {
     document.getElementById('calcResult').style.display = 'block';
 }
 
-
 // --- 🚀 国試対策オリジナル4択クイズ ---
 const PRESET_EXAM_QUESTIONS = [
-    {
-        q: "放射平衡において「永続平衡」が成立するための親核種の半減期(Tp)と娘核種の半減期(Td)の条件として正しいものはどれか？",
-        opts: ["Tp ≫ Td", "Tp ＞ Td (その差は数倍程度)", "Tp ＝ Td", "Tp ＜ Td"], ans: 0,
-        exp: "親核種の半減期が娘核種に比べてきわめて長い場合（Tp ≫ Td）に成立する平衡を「永続平衡」と呼びます。代表例は 226Ra(1600年) と 222Rn(3.82日) や、90Sr(28.8年) と 90Y(64時間) です。"
-    },
-    {
-        q: "原子質量の基準（きっかり 12.0000 u）として国際的に定義されている安定同位体はどれか？",
-        opts: ["炭素12 (12C)", "酸素16 (16O)", "水素1 (1H)", "窒素14 (14N)"], ans: 0,
-        exp: "現在の国際基準では、基底状態にある unbound な炭素12(12C)の静止質量を正確に 12 ダルトン(u) と定義しています。"
-    },
-    {
-        q: "次の放射性核種のうち、壊変に伴って「純粋なβ-線（γ線を伴わない）」を放出する純β-放出体はどれか？",
-        opts: ["32P (リン32)", "60Co (コバルト60)", "131I (ヨウ素131)", "24Na (ナトリウム24)"], ans: 0,
-        exp: "純β-放出体の代表例は 3H, 14C, 32P, 35S, 45Ca, 89Sr, 90Sr, 90Y などです。60Co, 131I, 24Na はβ-壊変の直後に強いγ線を放出します。"
-    },
-    {
-        q: "ジェネレータ（ミルキングシステム）を利用して院内で抽出・調製される核種として【誤っているもの】はどれか？",
-        opts: ["18F (フッ素18)", "99mTc (テクネチウム99m)", "81mKr (クリプトン81m)", "68Ga (ガリウム68)"], ans: 0,
-        exp: "18F は半減期が109.8分と短く適当な親核種が存在しないため、サイクロトロンでそのつど製造されます。他の3つはジェネレータで溶出可能です。"
-    },
-    {
-        q: "「去勢抵抗性前立腺癌の骨転移」に対するアルファ線内用療法（ゾーフィゴ静注）に用いられる核種はどれか？",
-        opts: ["223Ra (ラジウム223)", "89Sr (ストロンチウム89)", "131I (ヨウ素131)", "90Y (イットリウム90)"], ans: 0,
-        exp: "223Ra はカルシウムと同族元素であるため骨転移病巣に集積し、飛程の短い強力なα線を放出して腫瘍を叩きます。"
-    },
-    {
-        q: "次の核医学シンチグラフィ用医薬品のうち、「Na+, K+-ATPaseを介した能動輸送」によって心筋細胞内に取り込まれるものはどれか？",
-        opts: ["201TlCl (塩化タリウム)", "99mTc-MIBI", "123I-BMIPP", "99mTc-PYP (ピロリン酸)"], ans: 0,
-        exp: "タリウムイオン(Tl+)は生体内においてカリウムイオン(K+)と極めてよく似た挙動をとるため、心筋細胞膜の Na+,K+-ATPase によって能動的に取り込まれます。"
-    },
-    {
-        q: "半減期が「6.02時間」であり、141 keV の単一γ線を放出するためSPECT検査の主役となっている核種はどれか？",
-        opts: ["99mTc (テクネチウム99m)", "123I (ヨウ素123)", "111In (インジウム111)", "67Ga (ガリウム67)"], ans: 0,
-        exp: "99mTc はγ線エネルギーが141keVとカメラ感度に最も適しており、かつβ線を放出しないため患者被曝を低く抑えられる理想的な核種です。"
-    },
-    {
-        q: "消滅γ線（511 keV）を互いに180度反対方向へ同時放出する性質を利用する画像診断法はどれか？",
-        opts: ["PET", "SPECT", "オートラジオグラフィ", "コンプトンカメラ"], ans: 0,
-        exp: "PETは、β+壊変で放出された陽電子(e+)が電子(e-)と結合・消滅する際に生じる「511 keV の消滅光子2本」を同時計数リングで捉えます。"
-    }
+    { q: "放射平衡において「永続平衡」が成立するための親核種の半減期(Tp)と娘核種の半減期(Td)の条件として正しいものはどれか？", opts: ["Tp ≫ Td", "Tp ＞ Td (その差は数倍程度)", "Tp ＝ Td", "Tp ＜ Td"], ans: 0, exp: "親核種の半減期が娘核種に比べてきわめて長い場合（Tp ≫ Td）に成立する平衡を「永続平衡」と呼びます。代表例は 226Ra(1600年) と 222Rn(3.82日) や、90Sr(28.8年) と 90Y(64時間) です。" },
+    { q: "原子質量の基準（きっかり 12.0000 u）として国際的に定義されている安定同位体はどれか？", opts: ["炭素12 (12C)", "酸素16 (16O)", "水素1 (1H)", "窒素14 (14N)"], ans: 0, exp: "現在の国際基準では、基底状態にある unbound な炭素12(12C)の静止質量を正確に 12 ダルトン(u) と定義しています。" },
+    { q: "次の放射性核種のうち、壊変に伴って「純粋なβ-線（γ線を伴わない）」を放出する純β-放出体はどれか？", opts: ["32P (リン32)", "60Co (コバルト60)", "131I (ヨウ素131)", "24Na (ナトリウム24)"], ans: 0, exp: "純β-放出体の代表例は 3H, 14C, 32P, 35S, 45Ca, 89Sr, 90Sr, 90Y などです。60Co, 131I, 24Na はβ-壊変の直後に強いγ線を放出します。" },
+    { q: "ジェネレータ（ミルキングシステム）を利用して院内で抽出・調製される核種として【誤っているもの】はどれか？", opts: ["18F (フッ素18)", "99mTc (テクネチウム99m)", "81mKr (クリプトン81m)", "68Ga (ガリウム68)"], ans: 0, exp: "18F は半減期が109.8分と短く適当な親核種が存在しないため、サイクロトロンでそのつど製造されます。他の3つはジェネレータで溶出可能です。" },
+    { q: "「去勢抵抗性前立腺癌の骨転移」に対するアルファ線内用療法（ゾーフィゴ静注）に用いられる核種はどれか？", opts: ["223Ra (ラジウム223)", "89Sr (ストロンチウム89)", "131I (ヨウ素131)", "90Y (イットリウム90)"], ans: 0, exp: "223Ra はカルシウムと同族元素であるため骨転移病巣に集積し、飛程の短い強力なα線を放出して腫瘍を叩きます。" },
+    { q: "次の核医学シンチグラフィ用医薬品のうち、「Na+, K+-ATPaseを介した能動輸送」によって心筋細胞内に取り込まれるものはどれか？", opts: ["201TlCl (塩化タリウム)", "99mTc-MIBI", "123I-BMIPP", "99mTc-PYP (ピロリン酸)"], ans: 0, exp: "タリウムイオン(Tl+)は生体内においてカリウムイオン(K+)と極めてよく似た挙動をとるため、心筋細胞膜の Na+,K+-ATPase によって能動的に取り込まれます。" },
+    { q: "半減期が「6.02時間」であり、141 keV の単一γ線を放出するためSPECT検査の主役となっている核種はどれか？", opts: ["99mTc (テクネチウム99m)", "123I (ヨウ素123)", "111In (インジウム111)", "67Ga (ガリウム67)"], ans: 0, exp: "99mTc はγ線エネルギーが141keVとカメラ感度に最も適しており、かつβ線を放出しないため患者被曝を低く抑えられる理想的な核種です。" },
+    { q: "消滅γ線（511 keV）を互いに180度反対方向へ同時放出する性質を利用する画像診断法はどれか？", opts: ["PET", "SPECT", "オートラジオグラフィ", "コンプトンカメラ"], ans: 0, exp: "PETは、β+壊変で放出された陽電子(e+)が電子(e-)と結合・消滅する際に生じる「511 keV の消滅光子2本」を同時計数リングで捉えます。" }
 ];
 
 let activeQuizPool = [];
@@ -482,9 +441,9 @@ function buildDynamicQuizPool(genre) {
             let decoys = PHARMA_DATABASE.filter(x=>x.mechanism!==p.mechanism).sort(()=>Math.random()-0.5).slice(0,3).map(x=>x.mechanism);
             let opts = [p.mechanism, ...decoys].sort(()=>Math.random()-0.5);
             pool.push({
-                q: `核医学領域で用いられる「<strong style="color:#e74c3c;">${p.nuclide} (${p.drugName})</strong>」の【集積機序（メカニズム）】として正しいものはどれか？`,
+                q: `核医学領域で用いられる医薬品「<strong style="color:#e74c3c;">${p.drugName}</strong>」の【集積機序（メカニズム）】として正しいものはどれか？`,
                 opts: opts, ans: opts.indexOf(p.mechanism),
-                exp: `【解説】 ${p.nuclide} (${p.drugName}) は「${p.mechanism}」により ${p.organ} (${p.disease.join(', ')}) に集積します。`
+                exp: `【解説】 ${p.drugName} は「${p.mechanism}」により ${p.organ} (${p.disease.join(', ')}) に集積します。`
             });
         } else if(genre === 'mode_combination' || (genre === 'random' && Math.random()<0.5)) {
             let iso = FLAT_RI_ISOTOPES[Math.floor(Math.random()*FLAT_RI_ISOTOPES.length)];
@@ -518,7 +477,6 @@ function startQuiz() {
     const g = document.getElementById('quizGenre').value;
     activeQuizPool = buildDynamicQuizPool(g).slice(0,10);
     currentQIdx = 0; correctQCount = 0; quizHistory = [];
-
     document.getElementById('quiz-start-screen').style.display = 'none';
     document.getElementById('quiz-result-screen').style.display = 'none';
     document.getElementById('quiz-play-screen').style.display = 'block';
@@ -529,13 +487,11 @@ function showNextQuestion() {
     const qObj = activeQuizPool[currentQIdx];
     document.getElementById('quizProgress').innerText = `🏆 第 ${currentQIdx + 1} / ${activeQuizPool.length} 問`;
     document.getElementById('quizQuestion').innerHTML = qObj.q;
-    
     const optArea = document.getElementById('quizOptions'); optArea.innerHTML = '';
     qObj.opts.forEach((text, idx) => {
         let b = document.createElement('button'); b.className = 'quiz-btn'; b.innerHTML = text;
         b.onclick = () => judgeQuizAnswer(idx); optArea.appendChild(b);
     });
-
     document.getElementById('quizExplanation').style.display = 'none';
     document.getElementById('nextQuizBtn').style.display = 'none';
 }
@@ -544,15 +500,12 @@ function judgeQuizAnswer(userPickedIdx) {
     const qObj = activeQuizPool[currentQIdx];
     const isOk = (userPickedIdx === qObj.ans);
     if(isOk) correctQCount++;
-
     quizHistory.push({ qNum: currentQIdx+1, qText: qObj.q, user: qObj.opts[userPickedIdx], ans: qObj.opts[qObj.ans], isOk: isOk, exp: qObj.exp });
-
     document.querySelectorAll('#quizOptions .quiz-btn').forEach((btn, idx) => {
         btn.disabled = true;
         if(idx === qObj.ans) btn.classList.add('correct');
         else if(idx === userPickedIdx) btn.classList.add('incorrect');
     });
-
     const expDiv = document.getElementById('quizExplanation');
     expDiv.innerHTML = `<div style="font-size:18px; font-weight:bold; margin-bottom:8px; color:${isOk?'#27ae60':'#c0392b'};">${isOk?'⭕ 大正解！':'❌ ざんねん...'}</div><div>${qObj.exp.replace(/\n/g,'<br>')}</div>`;
     expDiv.style.display = 'block';
@@ -569,7 +522,6 @@ function finishQuiz() {
     document.getElementById('quiz-play-screen').style.display = 'none';
     document.getElementById('quiz-result-screen').style.display = 'block';
     document.getElementById('quizScore').innerText = `${correctQCount} / ${activeQuizPool.length}`;
-
     const rev = document.getElementById('quizReviewArea'); rev.innerHTML = '';
     quizHistory.forEach(h => {
         let d = document.createElement('div');
@@ -582,7 +534,4 @@ function finishQuiz() {
 function abortQuiz() { document.getElementById('quiz-play-screen').style.display = 'none'; document.getElementById('quiz-start-screen').style.display = 'block'; }
 function resetQuiz() { document.getElementById('quiz-result-screen').style.display = 'none'; document.getElementById('quiz-start-screen').style.display = 'block'; }
 
-function toggleFilter(el) {
-    el.classList.toggle('active');
-    executeAdvancedSearch();
-}
+function toggleFilter(el) { el.classList.toggle('active'); executeAdvancedSearch(); }
