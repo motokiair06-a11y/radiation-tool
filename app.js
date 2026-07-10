@@ -73,7 +73,7 @@ function switchSearchMode(mode) {
     filtersN.style.display = 'none'; filtersP.style.display = 'none'; if(filtersD) filtersD.style.display = 'none';
 
     if (mode === 'nuclide') { btnN.style.cssText = "flex:1; padding:10px; background-color:#3498db; color:white; border:none; font-size:13px;"; filtersN.style.display = 'block'; title.innerText = '🔍 核種データベース検索'; }
-    else if (mode === 'pharma') { btnP.style.cssText = "flex:1; padding:10px; background-color:#3498db; color:white; border:none; font-size:13px;"; filtersP.style.display = 'block'; title.innerText = '💊 部位・医薬品データベース検索'; }
+    else if (mode === 'pharma') { btnP.style.cssText = "flex:1; padding:10px; background-color:#3498db; color:white; border:none; font-size:13px;"; filtersP.style.display = 'block'; title.innerText = '💊 核医学データベース検索'; }
     else if (mode === 'detector') { btnD.style.cssText = "flex:1; padding:10px; background-color:#3498db; color:white; border:none; font-size:13px;"; if(filtersD) filtersD.style.display = 'block'; title.innerText = '📡 検出器データベース検索'; }
 }
 
@@ -112,7 +112,9 @@ function executeAdvancedSearch() {
         highlightPeriodic([...new Set(res.map(i => i.element))]);
 
     } else if (currentSearchMode === 'pharma') {
+        let selectedTypes = Array.from(document.querySelectorAll('#type-filters .filter-tag.active')).map(el => el.dataset.value);
         let selectedOrgans = Array.from(document.querySelectorAll('#organ-filters .filter-tag.active')).map(el => el.dataset.value);
+        
         let res = PHARMA_DATABASE.filter(p => {
             let matchQuery = false;
             let exactSym = JAPANESE_ELEMENT_MAP[q] || q;
@@ -123,19 +125,36 @@ function executeAdvancedSearch() {
                 let extracted = p.nuclide.match(/[A-Z][a-z]?/g) || [];
                 matchQuery = extracted.includes(exactSym);
             } else {
-                matchQuery = (p.organ.includes(q) || p.drug.toLowerCase().includes(q.toLowerCase()) || p.nuclide.toLowerCase().includes(q.toLowerCase()) || (p.disease && p.disease.includes(q)));
+                matchQuery = (p.organ.includes(q) || p.drugName.toLowerCase().includes(q.toLowerCase()) || p.nuclide.toLowerCase().includes(q.toLowerCase()) || p.disease.some(d => d.includes(q)));
             }
             
-            let matchTags = (selectedOrgans.length === 0) || (searchLogic === 'and' ? selectedOrgans.every(o => p.category.includes(o)) : selectedOrgans.some(o => p.category.includes(o)));
-            return matchQuery && matchTags;
+            let matchType = selectedTypes.length === 0 || selectedTypes.includes(p.type);
+            
+            let matchOrgan = true;
+            if (selectedOrgans.length > 0) {
+                let organChecks = selectedOrgans.map(o => p.category.includes(o));
+                matchOrgan = searchLogic === 'and' ? organChecks.every(chk => chk) : organChecks.some(chk => chk);
+            }
+            
+            return matchQuery && matchType && matchOrgan;
         });
 
-        let html = res.length ? `<h3>検索結果: ${res.length} 件</h3><table class="result-table"><thead><tr><th style="min-width:60px;">部位</th><th style="min-width:110px;">放射性医薬品</th><th style="min-width:50px;">使用核種</th><th>集積機序 (メカニズム)</th><th>対象疾患・適応</th><th>投与法・特記事項</th></tr></thead><tbody>` : '<p style="color:red;text-align:center;font-weight:bold;">見つかりません</p>';
+        // テーブルのヘッダと順序を変更
+        let html = res.length ? `<h3>検索結果: ${res.length} 件</h3><table class="result-table"><thead><tr><th style="min-width:60px;">部位</th><th style="min-width:160px;">放射性医薬品 (薬剤名)</th><th style="min-width:100px;">対象疾患</th><th>投与方法・特記事項</th><th>集積機序 (メカニズム)</th></tr></thead><tbody>` : '<p style="color:red;text-align:center;font-weight:bold;">見つかりません</p>';
         let matchedElements = [];
         res.forEach(p => {
             let match = p.nuclide.match(/[A-Z][a-z]?/g); 
             if (match) match.forEach(m => matchedElements.push(m));
-            html += `<tr><td style="font-weight:bold; color:#2c3e50;">${p.organ}</td><td style="color:#e74c3c; font-weight:bold;">${p.drug}</td><td><span style="background-color:#eaf2f8; padding:3px 6px; border-radius:4px; font-size:12px; font-weight:bold; color:#2980b9;">${p.nuclide}</span></td><td style="font-size:13px; line-height:1.4;">${p.mechanism}</td><td style="font-size:13px; line-height:1.4; color:#27ae60; font-weight:bold;">${p.disease || '-'}</td><td style="font-size:12px; line-height:1.4; color:#7f8c8d;">${p.notes || '-'}</td></tr>`;
+            
+            let diseaseHtml = `<ul style="margin:0; padding-left:18px;">` + p.disease.map(d => `<li>${d}</li>`).join('') + `</ul>`;
+            
+            html += `<tr>
+                <td style="font-weight:bold; color:#2c3e50;">${p.organ}</td>
+                <td><span style="color:#2980b9; font-weight:bold; font-size:15px;">${p.nuclide}</span> <span style="font-size:13px; color:#555;">(${p.drugName})</span></td>
+                <td style="font-size:13px; line-height:1.4; color:#27ae60; font-weight:bold;">${diseaseHtml}</td>
+                <td style="font-size:12px; line-height:1.4; color:#7f8c8d;">${p.notes || '-'}</td>
+                <td style="font-size:13px; line-height:1.4;">${p.mechanism}</td>
+            </tr>`;
         });
         document.getElementById('searchResult').innerHTML = html + (res.length ? '</tbody></table>' : '');
         highlightPeriodic([...new Set(matchedElements)]);
@@ -463,9 +482,9 @@ function buildDynamicQuizPool(genre) {
             let decoys = PHARMA_DATABASE.filter(x=>x.mechanism!==p.mechanism).sort(()=>Math.random()-0.5).slice(0,3).map(x=>x.mechanism);
             let opts = [p.mechanism, ...decoys].sort(()=>Math.random()-0.5);
             pool.push({
-                q: `放射性医薬品「<strong style="color:#e74c3c;">${p.drug}</strong>」の【集積機序（メカニズム）】として正しいものはどれか？`,
+                q: `核医学領域で用いられる「<strong style="color:#e74c3c;">${p.nuclide} (${p.drugName})</strong>」の【集積機序（メカニズム）】として正しいものはどれか？`,
                 opts: opts, ans: opts.indexOf(p.mechanism),
-                exp: `【解説】 ${p.drug} は「${p.mechanism}」により ${p.organ} (${p.disease||'対象疾患'}) に集積します。使用核種は ${p.nuclide} です。`
+                exp: `【解説】 ${p.nuclide} (${p.drugName}) は「${p.mechanism}」により ${p.organ} (${p.disease.join(', ')}) に集積します。`
             });
         } else if(genre === 'mode_combination' || (genre === 'random' && Math.random()<0.5)) {
             let iso = FLAT_RI_ISOTOPES[Math.floor(Math.random()*FLAT_RI_ISOTOPES.length)];
@@ -563,7 +582,6 @@ function finishQuiz() {
 function abortQuiz() { document.getElementById('quiz-play-screen').style.display = 'none'; document.getElementById('quiz-start-screen').style.display = 'block'; }
 function resetQuiz() { document.getElementById('quiz-result-screen').style.display = 'none'; document.getElementById('quiz-start-screen').style.display = 'block'; }
 
-// --- フィルターのクリック動作 ---
 function toggleFilter(el) {
     el.classList.toggle('active');
     executeAdvancedSearch();
