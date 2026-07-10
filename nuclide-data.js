@@ -1,375 +1,93 @@
 // ⚛️ 放射化学 講義資料完全網羅核種データベース
 const NUCLIDE_DATABASE = {
-    "H": {
-        elementName: "水素",
-        isotopes: [
-            { mass: "1", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "天然存在比: 99.985%" },
-            { mass: "2", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "重水素(D)。天然存在比: 0.015%" },
-            { mass: "3", halfLifeValue: "12.3", unit: "年", mode: "β-", energy: "最大β-: 18.6 keV", usage: "トレーサ", production: "原子炉", other: "誘導放射性核種 (宇宙線反応: 14N(n, 3H)12C)。純β-放出体。" }
-        ]
-    },
-    "He": {
-        elementName: "ヘリウム",
-        isotopes: [
-            { mass: "4", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "核子1個あたりの結合エネルギー: 7.07 MeV。α粒子の実体。" }
-        ]
-    },
-    "Be": {
-        elementName: "ベリリウム",
-        isotopes: [
-            { mass: "7", halfLifeValue: "53.3", unit: "日", mode: "EC", energy: "γ: 478 keV", usage: "環境分析", production: "天然", other: "誘導放射性核種 (大気中のN, Oと宇宙線の反応)" },
-            { mass: "10", halfLifeValue: "1.51M", unit: "年", mode: "β-", energy: "最大β-: 556 keV", usage: "年代測定", production: "天然", other: "誘導放射性核種。宇宙線生成地球科学に利用。" }
-        ]
-    },
-    "B": {
-        elementName: "ホウ素",
-        isotopes: [
-            { mass: "10", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "BNCT", production: "", other: "天然存在比: 19.9%。中性子捕獲療法に有用。" },
-            { mass: "11", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "天然存在比: 80.1%" }
-        ]
-    },
-    "C": {
-        elementName: "炭素",
-        isotopes: [
-            { mass: "11", halfLifeValue: "20.4", unit: "分", mode: "β+", energy: "最大β+: 960 keV, 消滅γ: 511 keV", usage: "PET", production: "院内サイクロトロン", other: "14N(p, α)11C 反応にて無担体製造。11C-メチオニン等。" },
-            { mass: "12", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "質量基準", production: "", other: "天然存在比: 98.9%。本核種の質量を 12.0000 u と定義。" },
-            { mass: "13", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "NMR", production: "", other: "天然存在比: 1.10%" },
-            { mass: "14", halfLifeValue: "5730", unit: "年", mode: "β-", energy: "最大β-: 157 keV", usage: "年代測定", production: "原子炉", other: "誘導放射性核種 (14N(n, p)14C)。有機化合物の年代測定に汎用。純β-。" }
-        ]
-    },
-    "N": {
-        elementName: "窒素",
-        isotopes: [
-            { mass: "13", halfLifeValue: "9.97", unit: "分", mode: "β+", energy: "最大β+: 1.19 MeV, 消滅γ: 511 keV", usage: "PET", production: "院内サイクロトロン", other: "16O(p, α)13N 反応。13N-アンモニアによる心筋血流評価。" },
-            { mass: "14", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "天然存在比: 99.634%" },
-            { mass: "15", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "天然存在比: 0.366%" }
-        ]
-    },
-    "O": {
-        elementName: "酸素",
-        isotopes: [
-            { mass: "15", halfLifeValue: "2.04", unit: "分", mode: "β+", energy: "最大β+: 1.73 MeV, 消滅γ: 511 keV", usage: "PET", production: "院内サイクロトロン", other: "14N(d, n)15O または 15N(p, n)15O 反応。15O-ガス等の脳血流検査。" }
-        ]
-    },
-    "F": {
-        elementName: "フッ素",
-        isotopes: [
-            { mass: "18", halfLifeValue: "109.8", unit: "分", mode: "β+", energy: "最大β+: 634 keV, 消滅γ: 511 keV", usage: "PET", production: "商用サイクロトロン", other: "18O(p, n)18F または 20Ne(d, α)18F 反応。18F-FDGとして癌診断の主役。" }
-        ]
-    },
-    "Na": {
-        elementName: "ナトリウム",
-        isotopes: [
-            { mass: "22", halfLifeValue: "2.60", unit: "年", mode: "β+, EC", energy: "最大β+: 546 keV, γ: 1.275 MeV", usage: "較正線源", production: "商用サイクロトロン", other: "誘導放射性核種 (大気中Arと宇宙線の反応)。長期較正用。" },
-            { mass: "24", halfLifeValue: "15.0", unit: "時間", mode: "β-", energy: "γ: 1.37 MeV, 2.75 MeV", usage: "トレーサ", production: "原子炉", other: "23Na(n, γ)24Na 反応。同位体ターゲットのため基本は有担体となる。" }
-        ]
-    },
-    "P": {
-        elementName: "リン",
-        isotopes: [
-            { mass: "30", halfLifeValue: "2.5", unit: "分", mode: "β+, EC", energy: "消滅γ: 511 keV", usage: "研究用", production: "商用サイクロトロン", other: "壊変して 30Si に移行。" },
-            { mass: "31", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "単核種元素（天然存在比 100%）。" },
-            { mass: "32", halfLifeValue: "14.3", unit: "日", mode: "β-", energy: "最大β-: 1.711 MeV", usage: "治療/トレーサ", production: "原子炉", other: "32S(n, p)32P（無担体抽出可能）。純β-放出体。制動放射線に注意。" },
-            { mass: "33", halfLifeValue: "25", unit: "日", mode: "β-", energy: "最大β-: 250 keV", usage: "研究用", production: "原子炉", other: "33S(n, p)33P または 32P(n, γ)33P。低エネルギーβ-。" }
-        ]
-    },
-    "S": {
-        elementName: "硫黄",
-        isotopes: [
-            { mass: "35", halfLifeValue: "87.3", unit: "日", mode: "β-", energy: "最大β-: 167 keV", usage: "トレーサ", production: "原子炉", other: "35Cl(n, p)35S（無担体）。大気中Arの宇宙線誘導でも生成。純β-。" }
-        ]
-    },
-    "Cl": {
-        elementName: "塩素",
-        isotopes: [
-            { mass: "35", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "天然存在比: 75.77%" },
-            { mass: "36", halfLifeValue: "301k", unit: "年", mode: "β-, EC", energy: "最大β-: 710 keV", usage: "水文学", production: "原子炉", other: "35Cl(n, γ)36Cl 反応による誘導放射性核種。" },
-            { mass: "37", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "天然存在比: 24.23%" }
-        ]
-    },
-    "Ar": {
-        elementName: "アルゴン",
-        isotopes: [
-            { mass: "40", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "40KのEC壊変(10.7%)によって生成される娘核種。" }
-        ]
-    },
-    "K": {
-        elementName: "カリウム",
-        isotopes: [
-            { mass: "40", halfLifeValue: "1.25G", unit: "年", mode: "β-, EC", energy: "最大β-: 1.31 MeV, γ: 1.46 MeV", usage: "天然放射線", production: "天然", other: "壊変系列を作らない一次放射性核種（存在比0.0117%）。人体内にも約50kBq存在。" }
-        ]
-    },
-    "Ca": {
-        elementName: "カルシウム",
-        isotopes: [
-            { mass: "40", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "40Kのβ-壊変(89.3%)によって生成される安定核種。" },
-            { mass: "45", halfLifeValue: "163", unit: "日", mode: "β-", energy: "最大β-: 257 keV", usage: "骨代謝研究", production: "原子炉", other: "44Ca(n, γ)45Ca または 45Sc(n, p)45Ca。純β-放出体。" }
-        ]
-    },
-    "Cr": {
-        elementName: "クロム",
-        isotopes: [
-            { mass: "51", halfLifeValue: "27.7", unit: "日", mode: "EC", energy: "γ: 320 keV", usage: "血標識/検査", production: "原子炉", other: "50Cr(n, γ)51Cr 反応。赤血球寿命測定等。ホットアトム抽出の歴史あり。" }
-        ]
-    },
-    "Mn": {
-        elementName: "マンガン",
-        isotopes: [
-            { mass: "54", halfLifeValue: "312", unit: "日", mode: "EC", energy: "γ: 835 keV", usage: "較正線源", production: "原子炉", other: "54Fe(n, p)54Mn など。" }
-        ]
-    },
-    "Fe": {
-        elementName: "鉄",
-        isotopes: [
-            { mass: "55", halfLifeValue: "2.73", unit: "年", mode: "EC", energy: "特性X線のみ", usage: "代謝研究", production: "原子炉", other: "54Fe(n, γ)55Fe 反応。壊変して 55Mn になる。" },
-            { mass: "59", halfLifeValue: "44.5", unit: "日", mode: "β-", energy: "γ: 1.10 MeV, 1.29 MeV", usage: "鉄代謝検査", production: "原子炉", other: "58Fe(n, γ)59Fe 反応。造血機能のフェロキネティクス検査に使用。" }
-        ]
-    },
-    "Co": {
-        elementName: "コバルト",
-        isotopes: [
-            { mass: "57", halfLifeValue: "271.7", unit: "日", mode: "EC", energy: "γ: 122 keV, 136 keV", usage: "品質管理", production: "商用サイクロトロン", other: "ガンマカメラの均一性校正面線源として極めて重要。" },
-            { mass: "60", halfLifeValue: "5.27", unit: "年", mode: "β-", energy: "γ: 1.173 MeV, 1.333 MeV", usage: "遠隔治療/校正", production: "原子炉", other: "55Fe(n, γ)など。強力な2本のγ線を放出。遮へい・照射器具の標準。" }
-        ]
-    },
-    "Ni": {
-        elementName: "ニッケル",
-        isotopes: [
-            { mass: "63", halfLifeValue: "100", unit: "年", mode: "β-", energy: "最大β-: 67 keV", usage: "検出器線源", production: "原子炉", other: "62Ni(n, γ)63Ni。ガスクロマトグラフィのECD検出器線源。" }
-        ]
-    },
-    "Zn": {
-        elementName: "亜鉛",
-        isotopes: [
-            { mass: "65", halfLifeValue: "244", unit: "日", mode: "EC, β+", energy: "γ: 1.116 MeV", usage: "トレーサ", production: "原子炉", other: "64Zn(n, γ)65Zn 反応。" }
-        ]
-    },
-    "Ga": {
-        elementName: "ガリウム",
-        isotopes: [
-            { mass: "67", halfLifeValue: "3.26", unit: "日", mode: "EC", energy: "γ: 93, 185, 300 keV", usage: "SPECT (腫瘍/炎症)", production: "商用サイクロトロン", other: "68Zn(p, 2n)67Ga 反応（無担体）。クエン酸ガリウムとして悪性リンパ腫等に集積。" },
-            { mass: "68", halfLifeValue: "67.85", unit: "分", mode: "β+, EC", energy: "消滅γ: 511 keV", usage: "PET", production: "ジェネレータ", other: "68Ge-68Gaジェネレータ（親: 271.0日）の娘核種。次世代PET治療。配位子結合に汎用。" }
-        ]
-    },
-    "Ge": {
-        elementName: "ゲルマニウム",
-        isotopes: [
-            { mass: "68", halfLifeValue: "271.0", unit: "日", mode: "EC", energy: "特性X線のみ(娘がγ放出)", usage: "PET減弱補正/親核種", production: "商用サイクロトロン", other: "68Ge-68Gaジェネレータの親核種。PET装置の外部線源としても使用。" }
-        ]
-    },
-    "Kr": {
-        elementName: "クリプトン",
-        isotopes: [
-            { mass: "81m", halfLifeValue: "13.1", unit: "秒", mode: "IT", energy: "γ: 190 keV", usage: "肺換気シンチ", production: "ジェネレータ", other: "81Rb-81mKrジェネレータから5%果糖液等で溶出。超短半減期で持続吸入。" }
-        ]
-    },
-    "Rb": {
-        elementName: "ルビジウム",
-        isotopes: [
-            { mass: "81", halfLifeValue: "4.58", unit: "時間", mode: "β+, EC", energy: "γ: 446 keV, 511 keV", usage: "ジェネレータ親", production: "商用サイクロトロン", other: "82Kr(p, 2n)81Rb。陽イオン交換樹脂に吸着させて81mKrを生成。" },
-            { mass: "82", halfLifeValue: "1.27", unit: "分", mode: "β+", energy: "消滅γ: 511 keV", usage: "PET (心筋血流)", production: "ジェネレータ", other: "82Sr-82Rbジェネレータ（親: 25.4日）から生理食塩水で溶出。Kと類似動態。" }
-        ]
-    },
-    "Sr": {
-        elementName: "ストロンチウム",
-        isotopes: [
-            { mass: "89", halfLifeValue: "50.5", unit: "日", mode: "β-", energy: "最大β-: 1.46 MeV", usage: "骨転移治療", production: "原子炉", other: "塩化ストロンチウム。純β-放出体による疼痛緩和照射。" },
-            { mass: "90", halfLifeValue: "28.79", unit: "年", mode: "β-", energy: "最大β-: 546 keV", usage: "永続平衡親核種", production: "原子炉(核分裂)", other: "ウラン核分裂生成物(高収率)。娘の90Yと永続平衡を形成。純β-。" }
-        ]
-    },
-    "Y": {
-        elementName: "イットリウム",
-        isotopes: [
-            { mass: "90", halfLifeValue: "64.0", unit: "時間", mode: "β-", energy: "最大β-: 2.279 MeV", usage: "RI内用療法/ゼヴァリン", production: "ジェネレータ", other: "90Srからミルキング可能。高エネルギー純β-。悪性リンパ腫等のTRT治療用。" }
-        ]
-    },
-    "Mo": {
-        elementName: "モリブデン",
-        isotopes: [
-            { mass: "99", halfLifeValue: "65.94", unit: "時間", mode: "β-", energy: "γ: 740, 780 keV", usage: "ジェネレータ親核種", production: "原子炉", other: "98Mo(n, γ)またはU核分裂。99Mo-99mTcジェネレータの親。核医学に必須。" }
-        ]
-    },
-    "Tc": {
-        elementName: "テクネチウム",
-        isotopes: [
-            { mass: "99m", halfLifeValue: "6.02", unit: "時間", mode: "IT", energy: "γ: 141 keV", usage: "SPECT (核医学主役)", production: "ジェネレータ", other: "親99Moから生理食塩水で溶出。141keV一値の理想的物理特性。人工放射性元素。" },
-            { mass: "99", halfLifeValue: "211k", unit: "年", mode: "β-", energy: "最大β-: 294 keV", usage: "トレーサベース", production: "原子炉", other: "99mTcの壊変先。長半減期のため実質的に放射能を無視できる長寿命基底状態。" }
-        ]
-    },
-    "Cd": {
-        elementName: "カドミウム",
-        isotopes: [
-            { mass: "109", halfLifeValue: "462.6", unit: "日", mode: "EC", energy: "γ: 88 keV", usage: "較正線源", production: "原子炉", other: "壊変して 109Ag（銀）に移行。" }
-        ]
-    },
-    "In": {
-        elementName: "インジウム",
-        isotopes: [
-            { mass: "111", halfLifeValue: "2.81", unit: "日", mode: "EC", energy: "γ: 171 keV, 245 keV", usage: "SPECT/髄液/内用評価", production: "商用サイクロトロン", other: "112Cd(p, 2n)111In。111In-DTPA(髄液腔)、または90Y治療の事前可否判定用。" }
-        ]
-    },
-    "I": {
-        elementName: "ヨウ素",
-        isotopes: [
-            { mass: "123", halfLifeValue: "13.2", unit: "時間", mode: "EC", energy: "γ: 159 keV", usage: "SPECT (脳/心/甲状腺)", production: "商用サイクロトロン", other: "124Te(p, 2n)123I。159keVの鮮明な画像。IMP, MIBG, イオフルパンなど多方面へ。" },
-            { mass: "125", halfLifeValue: "59.4", unit: "日", mode: "EC", energy: "γ: 35.5 keV, 特性X線", usage: "RIA(インビトロ)/小線源治療", production: "原子炉", other: "試験管内検査(RIA)の主役。チロシン基標識が容易。前立腺癌シード埋込治療線源。" },
-            { mass: "127", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "制限対象", production: "", other: "単核種元素（天然100%）。検査前は昆布など本元素の摂取制限が必要。" },
-            { mass: "129", halfLifeValue: "15.7M", unit: "年", mode: "β-", energy: "γ: 39.6 keV", usage: "消滅放射性核種", production: "天然", other: "宇宙創生期に存在した消滅放射性核種。現在は人工核分裂でのみ発生。" },
-            { mass: "131", halfLifeValue: "8.02", unit: "日", mode: "β-", energy: "γ: 365 keV, 最大β-: 606 keV", usage: "治療/甲状腺シンチ", production: "原子炉", other: "130Te(n, γ)131Te→131I（無担体）。バセドウ病・甲状腺癌のTRT内用療法線源。" },
-            { mass: "133", halfLifeValue: "20.8", unit: "時間", mode: "β-", energy: "γ: 530 keV", usage: "研究用", production: "原子炉", other: "ウランの核分裂生成物（高収率）。" }
-        ]
-    },
-    "Xe": {
-        elementName: "キセノン",
-        isotopes: [
-            { mass: "133", halfLifeValue: "5.25", unit: "日", mode: "β-", energy: "γ: 81 keV", usage: "肺換気シンチ/脳血流", production: "原子炉(核分裂)", other: "不活性希ガス。ウラン核分裂から無担体分離。閉鎖循環吸入装置を使用。" }
-        ]
-    },
-    "Cs": {
-        elementName: "セシウム",
-        isotopes: [
-            { mass: "134", halfLifeValue: "2.06", unit: "年", mode: "β-", energy: "γ: 605, 796 keV", usage: "環境分析", production: "原子炉", other: "133Cs(n, γ)134Cs。原子炉内の中性子活性化で生成。" },
-            { mass: "137", halfLifeValue: "30.08", unit: "年", mode: "β-", energy: "γ: 662 keV(娘から)", usage: "較正線源/照射", production: "原子炉(核分裂)", other: "核分裂高収率。娘の137mBa(2.55分, IT)と永続平衡を形成。662keV標準線源。" }
-        ]
-    },
-    "Ba": {
-        elementName: "バリウム",
-        isotopes: [
-            { mass: "140", halfLifeValue: "12.75", unit: "日", mode: "β-", energy: "γ: 163, 537 keV", usage: "過渡平衡研究/分離", production: "原子炉(核分裂)", other: "娘核種 140La (1.68日) との間で典型的な過渡平衡を形成する代表例。" }
-        ]
-    },
-    "La": {
-        elementName: "ランタン",
-        isotopes: [
-            { mass: "140", halfLifeValue: "1.678", unit: "日", mode: "β-", energy: "γ: 1.60 MeV等", usage: "過渡平衡研究", production: "ジェネレータ", other: "140Baから溶出。Fe3+を共沈剤とした共沈分離や溶媒抽出法の実習に多用。" }
-        ]
-    },
-    "Pm": {
-        elementName: "プロメチウム",
-        isotopes: [
-            { mass: "147", halfLifeValue: "2.62", unit: "年", mode: "β-", energy: "最大β-: 224 keV", usage: "蛍光塗料", production: "原子炉(核分裂)", other: "人工放射性元素。U核分裂生成物からイオン交換法で初めて分離（1945年）。" }
-        ]
-    },
-    "Sm": {
-        elementName: "サマリウム",
-        isotopes: [
-            { mass: "146", halfLifeValue: "100M", unit: "年", mode: "α", energy: "α壊変", usage: "消滅放射性核種", production: "天然", other: "地球創生期に存在した消滅核種の一種。" },
-            { mass: "153", halfLifeValue: "46.3", unit: "時間", mode: "β-", energy: "γ: 103 keV, 最大β-: 810 keV", usage: "骨転移治療(レキサト)", production: "原子炉", other: "152Sm(n, γ)153Sm。骨疼痛治療薬。現在はLu-177等へシフト。" }
-        ]
-    },
-    "Lu": {
-        elementName: "ルテチウム",
-        isotopes: [
-            { mass: "177", halfLifeValue: "6.73", unit: "日", mode: "β-", energy: "γ: 113, 208 keV, 最大β-: 497 keV", usage: "がん治療 (TRT)", production: "原子炉", other: "176Lu(n, γ)177Lu。オキソドトレオチド等、セラノスティクスの治療主軸核種。" }
-        ]
-    },
-    "Tl": {
-        elementName: "タリウム",
-        isotopes: [
-            { mass: "201", halfLifeValue: "72.9", unit: "時間", mode: "EC", energy: "特性X線: 70 keV(主), γ: 135, 167 keV", usage: "SPECT (心筋/腫瘍)", production: "商用サイクロトロン", other: "203Tl(p, 3n)201Pb→(EC)→201Tl（無担体ミルキング）。Na,K-ATPaseによる能動輸送集積。" }
-        ]
-    },
-    "Pb": {
-        elementName: "鉛",
-        isotopes: [
-            { mass: "208", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "系列終点", production: "", other: "天然に存在する【最も重い安定同位体】。トリウム系列の最終安定到達核種。" }
-        ]
-    },
-    "Bi": {
-        elementName: "ビスマス",
-        isotopes: [
-            { mass: "209", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "系列終点", production: "", other: "ネプツニウム系列（4n+1系列）の最終到達核種（※極めて長寿命のα壊変だが安定扱い）。" }
-        ]
-    },
-    "Rn": {
-        elementName: "ラドン",
-        isotopes: [
-            { mass: "220", halfLifeValue: "55.6", unit: "秒", mode: "α", energy: "α壊変", usage: "自然被ばく", production: "天然", other: "別名「トロン」。トリウム系列の途中に生成される希ガス。" },
-            { mass: "222", halfLifeValue: "3.82", unit: "日", mode: "α", energy: "α: 5.49 MeV", usage: "自然被ばく原因", production: "ジェネレータ", other: "ウラン系列。226Raから生成される希ガス。エアロゾルに吸着し、体内被曝の主因となる。" }
-        ]
-    },
-    "Ra": {
-        elementName: "ラジウム",
-        isotopes: [
-            { mass: "223", halfLifeValue: "11.4", unit: "日", mode: "α", energy: "α: 5.72 MeV", usage: "骨転移治療 (ゾーフィゴ)", production: "原子炉/系列", other: "アクチニウム系列。Ca同族として骨へ集積。全生存期間(OS)を延長するTRT核種。" },
-            { mass: "226", halfLifeValue: "1600", unit: "年", mode: "α", energy: "α: 4.78 MeV, γ: 186 keV", usage: "永続平衡親/歴史", production: "天然", other: "ウラン系列。キュリー夫人が発見（1898年）。娘の222Rnと典型的な永続平衡を形成。" }
-        ]
-    },
-    "Ac": {
-        elementName: "アクチニウム",
-        isotopes: [
-            { mass: "225", halfLifeValue: "10.0", unit: "日", mode: "α", energy: "α壊変(多数)", usage: "がん治療 (TAT)", production: "原子炉/系列", other: "225Ac-PSMAなど、次世代のα線標識標的治療（セラノスティクス）の切り札核種。" }
-        ]
-    },
-    "Th": {
-        elementName: "トリウム",
-        isotopes: [
-            { mass: "232", halfLifeValue: "14.0G", unit: "年", mode: "α", energy: "α壊変", usage: "トリウム系列親", production: "天然", other: "質量数 4n 系列（トリウム系列）の出発親核種。トネウアの「ト」。" }
-        ]
-    },
-    "U": {
-        elementName: "ウラン",
-        isotopes: [
-            { mass: "235", halfLifeValue: "704M", unit: "年", mode: "α", energy: "α壊変, 熱中性子核分裂", usage: "原子炉燃料/親", production: "天然", other: "アクチニウム系列(4n+3)の親。熱中性子により質量数90/130付近へ非対称核分裂を起こす。" },
-            { mass: "238", halfLifeValue: "4.51G", unit: "年", mode: "α", energy: "α: 4.198 MeV", usage: "ウラン系列親", production: "天然", other: "質量数 4n+2 系列（ウラン系列）の出発親核種。地球創生時からの一次放射性核種。" }
-        ]
-    },
-    "Np": {
-        elementName: "ネプツニウム",
-        isotopes: [
-            { mass: "237", halfLifeValue: "2.14M", unit: "年", mode: "α", energy: "α壊変", usage: "ネプツニウム系列親", production: "人工", other: "質量数 4n+1 系列（ネプツニウム系列）の親核種。半減期が短いため天然では消滅放射性核種扱い。" }
-        ]
-    },
-    "Am": {
-        elementName: "アメリシウム",
-        isotopes: [
-            { mass: "241", halfLifeValue: "432.2", unit: "年", mode: "α", energy: "α: 5.486 MeV, γ: 59.5 keV", usage: "煙感知器/校正", production: "原子炉", other: "超ウラン元素。Pu(n, γ)等の壊変を経て生成。59.5keVの低エネγ線標準線源。" }
-        ]
-    },
-    "Cf": {
-        elementName: "カリホルニウム",
-        isotopes: [
-            { mass: "252", halfLifeValue: "2.64", unit: "年", mode: "自発核分裂, α", energy: "中性子放出(多発)", usage: "中性子源", production: "原子炉", other: "高い確率で「自発核分裂」を起こすため、強力なコンパクト中性子線源として利用。" }
-        ]
-    }
+    "H": { elementName: "水素", isotopes: [ { mass: "1", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "天然存在比: 99.985%" }, { mass: "2", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "重水素(D)。天然存在比: 0.015%" }, { mass: "3", halfLifeValue: "12.3", unit: "年", mode: "β-", energy: "最大β-: 18.6 keV", usage: "トレーサ", production: "原子炉", other: "誘導放射性核種 (宇宙線反応: 14N(n, 3H)12C)。純β-放出体。" } ] },
+    "He": { elementName: "ヘリウム", isotopes: [ { mass: "4", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "核子1個あたりの結合エネルギー: 7.07 MeV。α粒子の実体。" } ] },
+    "Be": { elementName: "ベリリウム", isotopes: [ { mass: "7", halfLifeValue: "53.3", unit: "日", mode: "EC", energy: "γ: 478 keV", usage: "環境分析", production: "天然", other: "誘導放射性核種 (大気中のN, Oと宇宙線の反応)" }, { mass: "10", halfLifeValue: "1.51M", unit: "年", mode: "β-", energy: "最大β-: 556 keV", usage: "年代測定", production: "天然", other: "誘導放射性核種。宇宙線生成地球科学に利用。" } ] },
+    "B": { elementName: "ホウ素", isotopes: [ { mass: "10", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "BNCT", production: "", other: "天然存在比: 19.9%。中性子捕獲療法に有用。" }, { mass: "11", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "天然存在比: 80.1%" } ] },
+    "C": { elementName: "炭素", isotopes: [ { mass: "11", halfLifeValue: "20.4", unit: "分", mode: "β+", energy: "最大β+: 960 keV, 消滅γ: 511 keV", usage: "PET", production: "院内サイクロトロン", other: "14N(p, α)11C 反応にて無担体製造。11C-メチオニン等。" }, { mass: "12", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "質量基準", production: "", other: "天然存在比: 98.9%。本核種の質量を 12.0000 u と定義。" }, { mass: "13", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "NMR", production: "", other: "天然存在比: 1.10%" }, { mass: "14", halfLifeValue: "5730", unit: "年", mode: "β-", energy: "最大β-: 157 keV", usage: "年代測定", production: "原子炉", other: "誘導放射性核種 (14N(n, p)14C)。有機化合物の年代測定に汎用。純β-。" } ] },
+    "N": { elementName: "窒素", isotopes: [ { mass: "13", halfLifeValue: "9.97", unit: "分", mode: "β+", energy: "最大β+: 1.19 MeV, 消滅γ: 511 keV", usage: "PET", production: "院内サイクロトロン", other: "16O(p, α)13N 反応。13N-アンモニアによる心筋血流評価。" }, { mass: "14", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "天然存在比: 99.634%" }, { mass: "15", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "天然存在比: 0.366%" } ] },
+    "O": { elementName: "酸素", isotopes: [ { mass: "15", halfLifeValue: "2.04", unit: "分", mode: "β+", energy: "最大β+: 1.73 MeV, 消滅γ: 511 keV", usage: "PET", production: "院内サイクロトロン", other: "14N(d, n)15O または 15N(p, n)15O 反応。15O-ガス等の脳血流検査。" } ] },
+    "F": { elementName: "フッ素", isotopes: [ { mass: "18", halfLifeValue: "109.8", unit: "分", mode: "β+", energy: "最大β+: 634 keV, 消滅γ: 511 keV", usage: "PET", production: "商用サイクロトロン", other: "18O(p, n)18F または 20Ne(d, α)18F 反応。18F-FDGとして癌診断の主役。" } ] },
+    "Na": { elementName: "ナトリウム", isotopes: [ { mass: "22", halfLifeValue: "2.60", unit: "年", mode: "β+, EC", energy: "最大β+: 546 keV, γ: 1.275 MeV", usage: "較正線源", production: "商用サイクロトロン", other: "誘導放射性核種 (大気中Arと宇宙線の反応)。長期較正用。" }, { mass: "24", halfLifeValue: "15.0", unit: "時間", mode: "β-", energy: "γ: 1.37 MeV, 2.75 MeV", usage: "トレーサ", production: "原子炉", other: "23Na(n, γ)24Na 反応。同位体ターゲットのため基本は有担体となる。" } ] },
+    "P": { elementName: "リン", isotopes: [ { mass: "30", halfLifeValue: "2.5", unit: "分", mode: "β+, EC", energy: "消滅γ: 511 keV", usage: "研究用", production: "商用サイクロトロン", other: "壊変して 30Si に移行。" }, { mass: "31", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "単核種元素（天然存在比 100%）。" }, { mass: "32", halfLifeValue: "14.3", unit: "日", mode: "β-", energy: "最大β-: 1.711 MeV", usage: "治療/トレーサ", production: "原子炉", other: "32S(n, p)32P（無担体抽出可能）。純β-放出体。制動放射線に注意。" }, { mass: "33", halfLifeValue: "25", unit: "日", mode: "β-", energy: "最大β-: 250 keV", usage: "研究用", production: "原子炉", other: "33S(n, p)33P または 32P(n, γ)33P。低エネルギーβ-。" } ] },
+    "S": { elementName: "硫黄", isotopes: [ { mass: "35", halfLifeValue: "87.3", unit: "日", mode: "β-", energy: "最大β-: 167 keV", usage: "トレーサ", production: "原子炉", other: "35Cl(n, p)35S（無担体）。大気中Arの宇宙線誘導でも生成。純β-。" } ] },
+    "Cl": { elementName: "塩素", isotopes: [ { mass: "35", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "天然存在比: 75.77%" }, { mass: "36", halfLifeValue: "301k", unit: "年", mode: "β-, EC", energy: "最大β-: 710 keV", usage: "水文学", production: "原子炉", other: "35Cl(n, γ)36Cl 反応による誘導放射性核種。" }, { mass: "37", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "天然存在比: 24.23%" } ] },
+    "Ar": { elementName: "アルゴン", isotopes: [ { mass: "40", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "40KのEC壊変(10.7%)によって生成される娘核種。" } ] },
+    "K": { elementName: "カリウム", isotopes: [ { mass: "40", halfLifeValue: "1.25G", unit: "年", mode: "β-, EC", energy: "最大β-: 1.31 MeV, γ: 1.46 MeV", usage: "天然放射線", production: "天然", other: "壊変系列を作らない一次放射性核種（存在比0.0117%）。人体内にも約50kBq存在。" } ] },
+    "Ca": { elementName: "カルシウム", isotopes: [ { mass: "40", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "", production: "", other: "40Kのβ-壊変(89.3%)によって生成される安定核種。" }, { mass: "45", halfLifeValue: "163", unit: "日", mode: "β-", energy: "最大β-: 257 keV", usage: "骨代謝研究", production: "原子炉", other: "44Ca(n, γ)45Ca または 45Sc(n, p)45Ca。純β-放出体。" } ] },
+    "Cr": { elementName: "クロム", isotopes: [ { mass: "51", halfLifeValue: "27.7", unit: "日", mode: "EC", energy: "γ: 320 keV", usage: "血標識/検査", production: "原子炉", other: "50Cr(n, γ)51Cr 反応。赤血球寿命測定等。ホットアトム抽出の歴史あり。" } ] },
+    "Mn": { elementName: "マンガン", isotopes: [ { mass: "54", halfLifeValue: "312", unit: "日", mode: "EC", energy: "γ: 835 keV", usage: "較正線源", production: "原子炉", other: "54Fe(n, p)54Mn など。" } ] },
+    "Fe": { elementName: "鉄", isotopes: [ { mass: "55", halfLifeValue: "2.73", unit: "年", mode: "EC", energy: "特性X線のみ", usage: "代謝研究", production: "原子炉", other: "54Fe(n, γ)55Fe 反応。壊変して 55Mn になる。" }, { mass: "59", halfLifeValue: "44.5", unit: "日", mode: "β-", energy: "γ: 1.10 MeV, 1.29 MeV", usage: "鉄代謝検査", production: "原子炉", other: "58Fe(n, γ)59Fe 反応。造血機能のフェロキネティクス検査に使用。" } ] },
+    "Co": { elementName: "コバルト", isotopes: [ { mass: "57", halfLifeValue: "271.7", unit: "日", mode: "EC", energy: "γ: 122 keV, 136 keV", usage: "品質管理", production: "商用サイクロトロン", other: "ガンマカメラの均一性校正面線源として極めて重要。" }, { mass: "60", halfLifeValue: "5.27", unit: "年", mode: "β-", energy: "γ: 1.173 MeV, 1.333 MeV", usage: "遠隔治療/校正", production: "原子炉", other: "55Fe(n, γ)など。強力な2本のγ線を放出。遮へい・照射器具の標準。" } ] },
+    "Ni": { elementName: "ニッケル", isotopes: [ { mass: "63", halfLifeValue: "100", unit: "年", mode: "β-", energy: "最大β-: 67 keV", usage: "検出器線源", production: "原子炉", other: "62Ni(n, γ)63Ni。ガスクロマトグラフィのECD検出器線源。" } ] },
+    "Zn": { elementName: "亜鉛", isotopes: [ { mass: "65", halfLifeValue: "244", unit: "日", mode: "EC, β+", energy: "γ: 1.116 MeV", usage: "トレーサ", production: "原子炉", other: "64Zn(n, γ)65Zn 反応。" } ] },
+    "Ga": { elementName: "ガリウム", isotopes: [ { mass: "67", halfLifeValue: "3.26", unit: "日", mode: "EC", energy: "γ: 93, 185, 300 keV", usage: "SPECT (腫瘍/炎症)", production: "商用サイクロトロン", other: "68Zn(p, 2n)67Ga 反応（無担体）。クエン酸ガリウムとして悪性リンパ腫等に集積。" }, { mass: "68", halfLifeValue: "67.85", unit: "分", mode: "β+, EC", energy: "消滅γ: 511 keV", usage: "PET", production: "ジェネレータ", other: "68Ge-68Gaジェネレータ（親: 271.0日）の娘核種。次世代PET治療。配位子結合に汎用。" } ] },
+    "Ge": { elementName: "ゲルマニウム", isotopes: [ { mass: "68", halfLifeValue: "271.0", unit: "日", mode: "EC", energy: "特性X線のみ(娘がγ放出)", usage: "PET減弱補正/親核種", production: "商用サイクロトロン", other: "68Ge-68Gaジェネレータの親核種。PET装置の外部線源としても使用。" } ] },
+    "Kr": { elementName: "クリプトン", isotopes: [ { mass: "81m", halfLifeValue: "13.1", unit: "秒", mode: "IT", energy: "γ: 190 keV", usage: "肺換気シンチ", production: "ジェネレータ", other: "81Rb-81mKrジェネレータから5%果糖液等で溶出。超短半減期で持続吸入。" } ] },
+    "Rb": { elementName: "ルビジウム", isotopes: [ { mass: "81", halfLifeValue: "4.58", unit: "時間", mode: "β+, EC", energy: "γ: 446 keV, 511 keV", usage: "ジェネレータ親", production: "商用サイクロトロン", other: "82Kr(p, 2n)81Rb。陽イオン交換樹脂に吸着させて81mKrを生成。" }, { mass: "82", halfLifeValue: "1.27", unit: "分", mode: "β+", energy: "消滅γ: 511 keV", usage: "PET (心筋血流)", production: "ジェネレータ", other: "82Sr-82Rbジェネレータ（親: 25.4日）から生理食塩水で溶出。Kと類似動態。" } ] },
+    "Sr": { elementName: "ストロンチウム", isotopes: [ { mass: "89", halfLifeValue: "50.5", unit: "日", mode: "β-", energy: "最大β-: 1.46 MeV", usage: "骨転移治療", production: "原子炉", other: "塩化ストロンチウム。純β-放出体による疼痛緩和照射。" }, { mass: "90", halfLifeValue: "28.79", unit: "年", mode: "β-", energy: "最大β-: 546 keV", usage: "永続平衡親核種", production: "原子炉(核分裂)", other: "ウラン核分裂生成物(高収率)。娘の90Yと永続平衡を形成。純β-。" } ] },
+    "Y": { elementName: "イットリウム", isotopes: [ { mass: "90", halfLifeValue: "64.0", unit: "時間", mode: "β-", energy: "最大β-: 2.279 MeV", usage: "RI内用療法/ゼヴァリン", production: "ジェネレータ", other: "90Srからミルキング可能。高エネルギー純β-。悪性リンパ腫等のTRT治療用。" } ] },
+    "Mo": { elementName: "モリブデン", isotopes: [ { mass: "99", halfLifeValue: "65.94", unit: "時間", mode: "β-", energy: "γ: 740, 780 keV", usage: "ジェネレータ親核種", production: "原子炉", other: "98Mo(n, γ)またはU核分裂。99Mo-99mTcジェネレータの親。核医学に必須。" } ] },
+    "Tc": { elementName: "テクネチウム", isotopes: [ { mass: "99m", halfLifeValue: "6.02", unit: "時間", mode: "IT", energy: "γ: 141 keV", usage: "SPECT (核医学主役)", production: "ジェネレータ", other: "親99Moから生理食塩水で溶出。141keV一値の理想的物理特性。人工放射性元素。" }, { mass: "99", halfLifeValue: "211k", unit: "年", mode: "β-", energy: "最大β-: 294 keV", usage: "トレーサベース", production: "原子炉", other: "99mTcの壊変先。長半減期のため実質的に放射能を無視できる長寿命基底状態。" } ] },
+    "Cd": { elementName: "カドミウム", isotopes: [ { mass: "109", halfLifeValue: "462.6", unit: "日", mode: "EC", energy: "γ: 88 keV", usage: "較正線源", production: "原子炉", other: "壊変して 109Ag（銀）に移行。" } ] },
+    "In": { elementName: "インジウム", isotopes: [ { mass: "111", halfLifeValue: "2.81", unit: "日", mode: "EC", energy: "γ: 171 keV, 245 keV", usage: "SPECT/髄液/内用評価", production: "商用サイクロトロン", other: "112Cd(p, 2n)111In。111In-DTPA(髄液腔)、または90Y治療の事前可否判定用。" } ] },
+    "I": { elementName: "ヨウ素", isotopes: [ { mass: "123", halfLifeValue: "13.2", unit: "時間", mode: "EC", energy: "γ: 159 keV", usage: "SPECT (脳/心/甲状腺)", production: "商用サイクロトロン", other: "124Te(p, 2n)123I。159keVの鮮明な画像。IMP, MIBG, イオフルパンなど多方面へ。" }, { mass: "125", halfLifeValue: "59.4", unit: "日", mode: "EC", energy: "γ: 35.5 keV, 特性X線", usage: "RIA(インビトロ)/小線源治療", production: "原子炉", other: "試験管内検査(RIA)の主役。チロシン基標識が容易。前立腺癌シード埋込治療線源。" }, { mass: "127", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "制限対象", production: "", other: "単核種元素（天然100%）。検査前は昆布など本元素の摂取制限が必要。" }, { mass: "129", halfLifeValue: "15.7M", unit: "年", mode: "β-", energy: "γ: 39.6 keV", usage: "消滅放射性核種", production: "天然", other: "宇宙創生期に存在した消滅放射性核種。現在は人工核分裂でのみ発生。" }, { mass: "131", halfLifeValue: "8.02", unit: "日", mode: "β-", energy: "γ: 365 keV, 最大β-: 606 keV", usage: "治療/甲状腺シンチ", production: "原子炉", other: "130Te(n, γ)131Te→131I（無担体）。バセドウ病・甲状腺癌のTRT内用療法線源。" }, { mass: "133", halfLifeValue: "20.8", unit: "時間", mode: "β-", energy: "γ: 530 keV", usage: "研究用", production: "原子炉", other: "ウランの核分裂生成物（高収率）。" } ] },
+    "Xe": { elementName: "キセノン", isotopes: [ { mass: "133", halfLifeValue: "5.25", unit: "日", mode: "β-", energy: "γ: 81 keV", usage: "肺換気シンチ/脳血流", production: "原子炉(核分裂)", other: "不活性希ガス。ウラン核分裂から無担体分離。閉鎖循環吸入装置を使用。" } ] },
+    "Cs": { elementName: "セシウム", isotopes: [ { mass: "134", halfLifeValue: "2.06", unit: "年", mode: "β-", energy: "γ: 605, 796 keV", usage: "環境分析", production: "原子炉", other: "133Cs(n, γ)134Cs。原子炉内の中性子活性化で生成。" }, { mass: "137", halfLifeValue: "30.08", unit: "年", mode: "β-", energy: "γ: 662 keV(娘から)", usage: "較正線源/照射", production: "原子炉(核分裂)", other: "核分裂高収率。娘の137mBa(2.55分, IT)と永続平衡を形成。662keV標準線源。" } ] },
+    "Ba": { elementName: "バリウム", isotopes: [ { mass: "140", halfLifeValue: "12.75", unit: "日", mode: "β-", energy: "γ: 163, 537 keV", usage: "過渡平衡研究/分離", production: "原子炉(核分裂)", other: "娘核種 140La (1.68日) との間で典型的な過渡平衡を形成する代表例。" } ] },
+    "La": { elementName: "ランタン", isotopes: [ { mass: "140", halfLifeValue: "1.678", unit: "日", mode: "β-", energy: "γ: 1.60 MeV等", usage: "過渡平衡研究", production: "ジェネレータ", other: "140Baから溶出。Fe3+を共沈剤とした共沈分離や溶媒抽出法の実習に多用。" } ] },
+    "Pm": { elementName: "プロメチウム", isotopes: [ { mass: "147", halfLifeValue: "2.62", unit: "年", mode: "β-", energy: "最大β-: 224 keV", usage: "蛍光塗料", production: "原子炉(核分裂)", other: "人工放射性元素。U核分裂生成物からイオン交換法で初めて分離（1945年）。" } ] },
+    "Sm": { elementName: "サマリウム", isotopes: [ { mass: "146", halfLifeValue: "100M", unit: "年", mode: "α", energy: "α壊変", usage: "消滅放射性核種", production: "天然", other: "地球創生期に存在した消滅核種の一種。" }, { mass: "153", halfLifeValue: "46.3", unit: "時間", mode: "β-", energy: "γ: 103 keV, 最大β-: 810 keV", usage: "骨転移治療(レキサト)", production: "原子炉", other: "152Sm(n, γ)153Sm。骨疼痛治療薬。現在はLu-177等へシフト。" } ] },
+    "Lu": { elementName: "ルテチウム", isotopes: [ { mass: "177", halfLifeValue: "6.73", unit: "日", mode: "β-", energy: "γ: 113, 208 keV, 最大β-: 497 keV", usage: "がん治療 (TRT)", production: "原子炉", other: "176Lu(n, γ)177Lu。オキソドトレオチド等、セラノスティクスの治療主軸核種。" } ] },
+    "Tl": { elementName: "タリウム", isotopes: [ { mass: "201", halfLifeValue: "72.9", unit: "時間", mode: "EC", energy: "特性X線: 70 keV(主), γ: 135, 167 keV", usage: "SPECT (心筋/腫瘍)", production: "商用サイクロトロン", other: "203Tl(p, 3n)201Pb→(EC)→201Tl（無担体ミルキング）。Na,K-ATPaseによる能動輸送集積。" } ] },
+    "Pb": { elementName: "鉛", isotopes: [ { mass: "208", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "系列終点", production: "", other: "天然に存在する【最も重い安定同位体】。トリウム系列の最終安定到達核種。" } ] },
+    "Bi": { elementName: "ビスマス", isotopes: [ { mass: "209", halfLifeValue: "安定", unit: "", mode: "安定", energy: "", usage: "系列終点", production: "", other: "ネプツニウム系列（4n+1系列）の最終到達核種（※極めて長寿命のα壊変だが安定扱い）。" } ] },
+    "Rn": { elementName: "ラドン", isotopes: [ { mass: "220", halfLifeValue: "55.6", unit: "秒", mode: "α", energy: "α壊変", usage: "自然被ばく", production: "天然", other: "別名「トロン」。トリウム系列の途中に生成される希ガス。" }, { mass: "222", halfLifeValue: "3.82", unit: "日", mode: "α", energy: "α: 5.49 MeV", usage: "自然被ばく原因", production: "ジェネレータ", other: "ウラン系列。226Raから生成される希ガス。エアロゾルに吸着し、体内被曝の主因となる。" } ] },
+    "Ra": { elementName: "ラジウム", isotopes: [ { mass: "223", halfLifeValue: "11.4", unit: "日", mode: "α", energy: "α: 5.72 MeV", usage: "骨転移治療 (ゾーフィゴ)", production: "原子炉/系列", other: "アクチニウム系列。Ca同族として骨へ集積。全生存期間(OS)を延長するTRT核種。" }, { mass: "226", halfLifeValue: "1600", unit: "年", mode: "α", energy: "α: 4.78 MeV, γ: 186 keV", usage: "永続平衡親/歴史", production: "天然", other: "ウラン系列。キュリー夫人が発見（1898年）。娘の222Rnと典型的な永続平衡を形成。" } ] },
+    "Ac": { elementName: "アクチニウム", isotopes: [ { mass: "225", halfLifeValue: "10.0", unit: "日", mode: "α", energy: "α壊変(多数)", usage: "がん治療 (TAT)", production: "原子炉/系列", other: "225Ac-PSMAなど、次世代のα線標識標的治療（セラノスティクス）の切り札核種。" } ] },
+    "Th": { elementName: "トリウム", isotopes: [ { mass: "232", halfLifeValue: "14.0G", unit: "年", mode: "α", energy: "α壊変", usage: "トリウム系列親", production: "天然", other: "質量数 4n 系列（トリウム系列）の出発親核種。トネウアの「ト」。" } ] },
+    "U": { elementName: "ウラン", isotopes: [ { mass: "235", halfLifeValue: "704M", unit: "年", mode: "α", energy: "α壊変, 熱中性子核分裂", usage: "原子炉燃料/親", production: "天然", other: "アクチニウム系列(4n+3)の親。熱中性子により質量数90/130付近へ非対称核分裂を起こす。" }, { mass: "238", halfLifeValue: "4.51G", unit: "年", mode: "α", energy: "α: 4.198 MeV", usage: "ウラン系列親", production: "天然", other: "質量数 4n+2 系列（ウラン系列）の出発親核種。地球創生時からの一次放射性核種。" } ] },
+    "Np": { elementName: "ネプツニウム", isotopes: [ { mass: "237", halfLifeValue: "2.14M", unit: "年", mode: "α", energy: "α壊変", usage: "ネプツニウム系列親", production: "人工", other: "質量数 4n+1 系列（ネプツニウム系列）の親核種。半減期が短いため天然では消滅放射性核種扱い。" } ] },
+    "Am": { elementName: "アメリシウム", isotopes: [ { mass: "241", halfLifeValue: "432.2", unit: "年", mode: "α", energy: "α: 5.486 MeV, γ: 59.5 keV", usage: "煙感知器/校正", production: "原子炉", other: "超ウラン元素。Pu(n, γ)等の壊変を経て生成。59.5keVの低エネγ線標準線源。" } ] },
+    "Cf": { elementName: "カリホルニウム", isotopes: [ { mass: "252", halfLifeValue: "2.64", unit: "年", mode: "自発核分裂, α", energy: "中性子放出(多発)", usage: "中性子源", production: "原子炉", other: "高い確率で「自発核分裂」を起こすため、強力なコンパクト中性子線源として利用。" } ] }
 };
 
-// --- 💊 医薬品・対象臓器 超詳細データベース ---
+// --- 💊 核医学（診断・治療） 超詳細データベース ---
 const PHARMA_DATABASE = [
-    { organ: "骨", category: "骨", drug: "99mTc-MDP, HMDP", mechanism: "ヒドロキシアパタイトへの化学吸着", disease: "多発性骨転移、疲労骨折", notes: "血行性に転移多発（赤色骨髄領域）。小児は成長線（関節）に集積。", nuclide: "99mTc" },
-    { organ: "心筋血流", category: "心", drug: "201TlCl", mechanism: "Na+, K+-ATPaseを介した能動輸送", disease: "虚血性心疾患", notes: "カリウム(K+)と類似挙動。再分布(ウォッシュアウト)による虚血評価。", nuclide: "201Tl" },
-    { organ: "心筋血流", category: "心", drug: "99mTc-MIBI, テトロホスミン", mechanism: "受動拡散によるミトコンドリアへの集積", disease: "虚血性心疾患", notes: "洗い出しが少なく滞留する。血流低下部位を欠損として描出。", nuclide: "99mTc" },
-    { organ: "心・全身", category: "心", drug: "99mTc-ピロリン酸 (PYP)", mechanism: "ミトコンドリア内カルシウムと結合", disease: "急性心筋梗塞、心アミロイドーシス", notes: "アミロイドーシスの鑑別に有用。", nuclide: "99mTc" },
-    { organ: "心筋脂肪酸", category: "心", drug: "123I-BMIPP", mechanism: "代謝(β酸化)プロセスでのトラッピング", disease: "心筋虚血、脂肪酸代謝異常", notes: "血流より代謝低下が強く出る(ミスマッチ)。", nuclide: "123I" },
-    { organ: "交感神経", category: "心", drug: "123I-MIBG", mechanism: "ノルエピネフリントランスポータ(NET)による取り込み", disease: "レビー小体型認知症、パーキンソン病、心不全", notes: "ノルアドレナリンに類似。H/M比の低下を評価。", nuclide: "123I" },
-    { organ: "脳血流", category: "脳", drug: "123I-IMP", mechanism: "受容体結合・アミン取り込み機構", disease: "脳血管障害、アルツハイマー病", notes: "ダイアモックス(アセタゾラミド)負荷試験を併用。後部帯状回の血流低下。", nuclide: "123I" },
-    { organ: "脳血流", category: "脳", drug: "99mTc-ECD, HM-PAO", mechanism: "細胞内での加水分解・グルタチオン反応", disease: "脳血管障害、認知症", notes: "血流の左右差などを評価。洗い出しが遅い。", nuclide: "99mTc" },
-    { organ: "神経受容体", category: "脳", drug: "123I-イオフルパン", mechanism: "ドパミントランスポータ(DAT)に結合", disease: "パーキンソン症候群、レビー小体型認知症", notes: "線条体（尾状核・被殻）の集積低下（カンマ形→ドット形）を評価。", nuclide: "123I" },
-    { organ: "中枢神経受容体", category: "脳", drug: "123I-イオマゼニル", mechanism: "ベンゾジアゼピン受容体に結合", disease: "てんかん", notes: "てんかん焦点で集積低下（発作間欠期）。", nuclide: "123I" },
-    { organ: "脳脊髄腔", category: "脳", drug: "111In-DTPA", mechanism: "脳脊髄液への移行と滞留", disease: "正常圧水頭症、髄液漏", notes: "腰椎穿刺により投与。側脳室への逆流や円蓋部への到達遅延をみる。", nuclide: "111In" },
-    { organ: "甲状腺", category: "内分泌", drug: "123I-NaI, 131I-NaI", mechanism: "ヨードポンプによる能動輸送＋有機化", disease: "甲状腺機能亢進症、異所性甲状腺", notes: "検査前1週間はヨウ素制限（海藻類など）が必要。カプセル経口投与。", nuclide: "123I, 131I" },
-    { organ: "甲状腺・唾液腺", category: "内分泌", drug: "99mTcO4- (過テクネチウム酸)", mechanism: "ヨードポンプによる能動輸送", disease: "甲状腺疾患、ワルチン腫瘍、シェーグレン症候群", notes: "フリーTc。有機化はされない。ワルチンで集積増、シェーグレンで低下。", nuclide: "99mTc" },
-    { organ: "副甲状腺", category: "内分泌", drug: "99mTc-MIBI", mechanism: "ミトコンドリアへの濃縮", disease: "副甲状腺機能亢進症（腺腫・過形成）", notes: "甲状腺からの洗い出しが早い(約2時間で不明瞭化)。", nuclide: "99mTc" },
-    { organ: "副腎髄質", category: "内分泌", drug: "123I-MIBG", mechanism: "カテコールアミン産生細胞へ集積", disease: "褐色細胞腫、神経芽細胞腫", notes: "小児の骨転移検索（神経芽細胞腫）にも用いる。", nuclide: "123I" },
-    { organ: "副腎皮質", category: "内分泌", drug: "131I-アドステロール", mechanism: "ステロイドホルモン生成原料として滞留", disease: "クッシング症候群、原発性アルドステロン症", notes: "アルコール溶液のためゆっくり静注する。", nuclide: "131I" },
-    { organ: "腫瘍・炎症", category: "腫瘍", drug: "67Ga-クエン酸", mechanism: "トランスフェリン受容体を介した取り込み", disease: "悪性リンパ腫、サルコイドーシス", notes: "静注後数日待機。現在はPETへ移行しつつある。", nuclide: "67Ga" },
-    { organ: "糖代謝(PET)", category: "腫瘍", drug: "18F-FDG", mechanism: "代謝トラッピング (ヘキソキナーゼ)", disease: "悪性腫瘍全般、心サルコイドーシス", notes: "絶食必須。脳、心筋、尿路系には生理的集積あり。炎症でも偽陽性。", nuclide: "18F" },
-    { organ: "アミノ酸代謝", category: "腫瘍", drug: "11C-メチオニン", mechanism: "アミノ酸トランスポータを介した取り込み", disease: "低悪性度脳腫瘍", notes: "炎症への集積がFDGより低く、脳腫瘍の評価に有用。", nuclide: "11C" },
-    { organ: "アミノ酸代謝", category: "腫瘍", drug: "18F-フルシクロビン", mechanism: "アミノ酸トランスポータを介した取り込み", disease: "初発の悪性神経膠腫（グリア細胞癌）", notes: "腫瘍摘出範囲の決定補助を目的とする。", nuclide: "18F" },
-    { organ: "神経内分泌腫瘍", category: "腫瘍", drug: "111In-ペンテトレオチド", mechanism: "ソマトスタチン受容体に結合", disease: "ガストリノーマ、カルチノイド (NET)", notes: "国内利用可能（オクトレオスキャン）。", nuclide: "111In" },
-    { organ: "腎動態", category: "腎", drug: "99mTc-MAG3", mechanism: "尿細管分泌", disease: "腎血管性高血圧、水腎症", notes: "フロセミド負荷(水腎症)、カプトリル負荷(高血圧)を併用。", nuclide: "99mTc" },
-    { organ: "腎動態", category: "腎", drug: "99mTc-DTPA", mechanism: "糸球体濾過 (GFR)", disease: "腎機能評価", notes: "投与と同時に撮像開始（血流相→機能相）。", nuclide: "99mTc" },
-    { organ: "腎静態", category: "腎", drug: "99mTc-DMSA", mechanism: "近位尿細管上皮細胞への結合", disease: "腎瘢痕、急性巣状細菌性腎炎", notes: "腎実質（皮質）に留まる。投与後2時間以降に撮像。", nuclide: "99mTc" },
-    { organ: "肺血流", category: "肺", drug: "99mTc-MAA", mechanism: "毛細血管での塞栓（物理的トラップ）", disease: "肺塞栓症", notes: "仰向けで静注する。気管支は写らない。", nuclide: "99mTc" },
-    { organ: "肺換気", category: "肺", drug: "133Xe, 81mKrガス", mechanism: "吸入後の肺胞への到達と呼気排出", disease: "肺塞栓症（換気血流ミスマッチ）", notes: "塞栓症では換気は正常だが血流が欠損する（ミスマッチ）。", nuclide: "133Xe, 81mKr" },
-    { organ: "肝・脾・リンパ", category: "肝", drug: "99mTc-スズコロイド, フチン酸", mechanism: "クッパー細胞による貪食", disease: "肝硬変、センチネルリンパ節同定", notes: "センチネルリンパ節シンチ時の皮下注射は疼痛を伴う。", nuclide: "99mTc" },
-    { organ: "肝胆道", category: "肝", drug: "99mTc-PMT", mechanism: "肝細胞摂取・胆汁排泄", disease: "黄疸の鑑別", notes: "ビリルビン増加による黄疸の鑑別に用いる。", nuclide: "99mTc" },
-    { organ: "肝受容体", category: "肝", drug: "99mTc-GSA", mechanism: "アシアロ糖タンパク受容体に結合", disease: "肝機能・肝予備能評価", notes: "LHL15やHH15で定量評価。", nuclide: "99mTc" },
-    { organ: "異所性胃粘膜", category: "肝", drug: "99mTcO4-", mechanism: "胃粘液産生細胞へ集積", disease: "メッケル憩室", notes: "検査前絶食。小児の下血等で疑う。", nuclide: "99mTc" },
-    { organ: "甲状腺(治療)", category: "治療", drug: "131I-NaI", mechanism: "β線による内部照射", disease: "バセドウ病、甲状腺癌", notes: "退室基準：体内残存500MBq以下 または 1m距離で30μSv/h以下。", nuclide: "131I" },
-    { organ: "神経内分泌(治療)", category: "治療", drug: "177Lu-オキソドトレオチド", mechanism: "ソマトスタチン受容体への結合・β線照射", disease: "神経内分泌腫瘍 (NET)", notes: "PRRT療法。腎保護のためアミノ酸輸液を併用。", nuclide: "177Lu" },
-    { organ: "骨転移(治療)", category: "治療", drug: "223Ra-塩化ラジウム", mechanism: "カルシウム同族として集積", disease: "去勢抵抗性前立腺癌の骨転移", notes: "α線放出核種。全生存期間の改善。飛程が短く正常組織の被ばくが少ない。", nuclide: "223Ra" },
-    { organ: "リンパ腫(治療)", category: "治療", drug: "90Y-イブリツモマブチウキセタン", mechanism: "CD20抗原への特異的結合・β線照射", disease: "CD20陽性 再発/難治性非ホジキンリンパ腫", notes: "純β放出体のため遮へいはアクリル等を使用。", nuclide: "90Y" }
+    { type: "診断", organ: "骨", category: "骨", nuclide: "99mTc", drugName: "MDP, HMDP", mechanism: "ヒドロキシアパタイトへの化学吸着", disease: ["多発性骨転移", "疲労骨折"], notes: "血行性に転移多発（赤色骨髄領域）。小児は成長線（関節）に集積。" },
+    { type: "診断", organ: "心筋血流", category: "心", nuclide: "201Tl", drugName: "塩化タリウム", mechanism: "Na+, K+-ATPaseを介した能動輸送", disease: ["虚血性心疾患"], notes: "カリウム(K+)と類似挙動。再分布(ウォッシュアウト)による虚血評価。" },
+    { type: "診断", organ: "心筋血流", category: "心", nuclide: "99mTc", drugName: "MIBI, テトロホスミン", mechanism: "受動拡散によるミトコンドリアへの集積", disease: ["虚血性心疾患"], notes: "洗い出しが少なく滞留する。血流低下部位を欠損として描出。" },
+    { type: "診断", organ: "心・全身", category: "心", nuclide: "99mTc", drugName: "ピロリン酸 / PYP", mechanism: "ミトコンドリア内カルシウムと結合", disease: ["急性心筋梗塞", "心アミロイドーシス"], notes: "アミロイドーシスの鑑別に有用。" },
+    { type: "診断", organ: "心筋脂肪酸", category: "心", nuclide: "123I", drugName: "BMIPP", mechanism: "代謝(β酸化)プロセスでのトラッピング", disease: ["心筋虚血", "脂肪酸代謝異常"], notes: "血流より代謝低下が強く出る(ミスマッチ)。" },
+    { type: "診断", organ: "交感神経", category: "心", nuclide: "123I", drugName: "MIBG", mechanism: "ノルエピネフリントランスポータ(NET)による取り込み", disease: ["レビー小体型認知症", "パーキンソン病", "心不全"], notes: "ノルアドレナリンに類似。H/M比の低下を評価。" },
+    { type: "診断", organ: "脳血流", category: "脳", nuclide: "123I", drugName: "IMP", mechanism: "受容体結合・アミン取り込み機構", disease: ["脳血管障害", "アルツハイマー病"], notes: "ダイアモックス(アセタゾラミド)負荷試験を併用。後部帯状回の血流低下。" },
+    { type: "診断", organ: "脳血流", category: "脳", nuclide: "99mTc", drugName: "ECD, HM-PAO", mechanism: "細胞内での加水分解・グルタチオン反応", disease: ["脳血管障害", "認知症"], notes: "血流の左右差などを評価。洗い出しが遅い。" },
+    { type: "診断", organ: "神経受容体", category: "脳", nuclide: "123I", drugName: "イオフルパン", mechanism: "ドパミントランスポータ(DAT)に結合", disease: ["パーキンソン症候群", "レビー小体型認知症"], notes: "線条体（尾状核・被殻）の集積低下（カンマ形→ドット形）を評価。" },
+    { type: "診断", organ: "中枢神経受容体", category: "脳", nuclide: "123I", drugName: "イオマゼニル", mechanism: "ベンゾジアゼピン受容体に結合", disease: ["てんかん"], notes: "てんかん焦点で集積低下（発作間欠期）。" },
+    { type: "診断", organ: "脳脊髄腔", category: "脳", nuclide: "111In", drugName: "DTPA", mechanism: "脳脊髄液への移行と滞留", disease: ["正常圧水頭症", "髄液漏"], notes: "腰椎穿刺により投与。側脳室への逆流や円蓋部への到達遅延をみる。" },
+    { type: "診断", organ: "甲状腺", category: "内分泌", nuclide: "123I", drugName: "NaI (カプセル)", mechanism: "ヨードポンプによる能動輸送＋有機化", disease: ["甲状腺機能亢進症", "異所性甲状腺"], notes: "検査前1週間はヨウ素制限（海藻類など）が必要。カプセル経口投与。" },
+    { type: "診断", organ: "甲状腺・唾液腺", category: "内分泌", nuclide: "99mTc", drugName: "過テクネチウム酸", mechanism: "ヨードポンプによる能動輸送", disease: ["甲状腺疾患", "ワルチン腫瘍", "シェーグレン症候群"], notes: "フリーTc。有機化はされない。ワルチンで集積増、シェーグレンで低下。" },
+    { type: "診断", organ: "副甲状腺", category: "内分泌", nuclide: "99mTc", drugName: "MIBI", mechanism: "ミトコンドリアへの濃縮", disease: ["副甲状腺機能亢進症（腺腫・過形成）"], notes: "甲状腺からの洗い出しが早い(約2時間で不明瞭化)。" },
+    { type: "診断", organ: "副腎髄質", category: "内分泌", nuclide: "123I", drugName: "MIBG", mechanism: "カテコールアミン産生細胞へ集積", disease: ["褐色細胞腫", "神経芽細胞腫"], notes: "小児の骨転移検索（神経芽細胞腫）にも用いる。" },
+    { type: "診断", organ: "副腎皮質", category: "内分泌", nuclide: "131I", drugName: "アドステロール", mechanism: "ステロイドホルモン生成原料として滞留", disease: ["クッシング症候群", "原発性アルドステロン症"], notes: "アルコール溶液のためゆっくり静注する。" },
+    { type: "診断", organ: "腫瘍・炎症", category: "腫瘍", nuclide: "67Ga", drugName: "クエン酸ガリウム", mechanism: "トランスフェリン受容体を介した取り込み", disease: ["悪性リンパ腫", "サルコイドーシス"], notes: "静注後数日待機。現在はPETへ移行しつつある。" },
+    { type: "診断", organ: "糖代謝(PET)", category: "腫瘍", nuclide: "18F", drugName: "FDG", mechanism: "代謝トラッピング (ヘキソキナーゼ)", disease: ["悪性腫瘍全般", "心サルコイドーシス"], notes: "絶食必須。脳、心筋、尿路系には生理的集積あり。炎症でも偽陽性。" },
+    { type: "診断", organ: "アミノ酸代謝", category: "腫瘍", nuclide: "11C", drugName: "メチオニン", mechanism: "アミノ酸トランスポータを介した取り込み", disease: ["低悪性度脳腫瘍"], notes: "炎症への集積がFDGより低く、脳腫瘍の評価に有用。" },
+    { type: "診断", organ: "アミノ酸代謝", category: "腫瘍", nuclide: "18F", drugName: "フルシクロビン", mechanism: "アミノ酸トランスポータを介した取り込み", disease: ["初発の悪性神経膠腫（グリア細胞癌）"], notes: "腫瘍摘出範囲の決定補助を目的とする。" },
+    { type: "診断", organ: "神経内分泌腫瘍", category: "腫瘍", nuclide: "111In", drugName: "ペンテトレオチド", mechanism: "ソマトスタチン受容体に結合", disease: ["ガストリノーマ", "カルチノイド (NET)"], notes: "国内利用可能（オクトレオスキャン）。" },
+    { type: "診断", organ: "腎動態", category: "腎", nuclide: "99mTc", drugName: "MAG3", mechanism: "尿細管分泌", disease: ["腎血管性高血圧", "水腎症"], notes: "フロセミド負荷(水腎症)、カプトリル負荷(高血圧)を併用。" },
+    { type: "診断", organ: "腎動態", category: "腎", nuclide: "99mTc", drugName: "DTPA", mechanism: "糸球体濾過 (GFR)", disease: ["腎機能評価"], notes: "投与と同時に撮像開始（血流相→機能相）。" },
+    { type: "診断", organ: "腎静態", category: "腎", nuclide: "99mTc", drugName: "DMSA", mechanism: "近位尿細管上皮細胞への結合", disease: ["腎瘢痕", "急性巣状細菌性腎炎"], notes: "腎実質（皮質）に留まる。投与後2時間以降に撮像。" },
+    { type: "診断", organ: "肺血流", category: "肺", nuclide: "99mTc", drugName: "MAA", mechanism: "毛細血管での塞栓（物理的トラップ）", disease: ["肺塞栓症"], notes: "仰向けで静注する。気管支は写らない。" },
+    { type: "診断", organ: "肺換気", category: "肺", nuclide: "133Xe, 81mKr", drugName: "ガス", mechanism: "吸入後の肺胞への到達と呼気排出", disease: ["肺塞栓症（換気血流ミスマッチ）"], notes: "塞栓症では換気は正常だが血流が欠損する（ミスマッチ）。" },
+    { type: "診断", organ: "肝・脾・リンパ", category: "肝", nuclide: "99mTc", drugName: "スズコロイド, フチン酸", mechanism: "クッパー細胞による貪食", disease: ["肝硬変", "センチネルリンパ節同定"], notes: "センチネルリンパ節シンチ時の皮下注射は疼痛を伴う。" },
+    { type: "診断", organ: "肝胆道", category: "肝", nuclide: "99mTc", drugName: "PMT", mechanism: "肝細胞摂取・胆汁排泄", disease: ["黄疸の鑑別"], notes: "ビリルビン増加による黄疸の鑑別に用いる。" },
+    { type: "診断", organ: "肝受容体", category: "肝", nuclide: "99mTc", drugName: "GSA", mechanism: "アシアロ糖タンパク受容体に結合", disease: ["肝機能・肝予備能評価"], notes: "LHL15やHH15で定量評価。" },
+    { type: "診断", organ: "異所性胃粘膜", category: "肝", nuclide: "99mTc", drugName: "過テクネチウム酸", mechanism: "胃粘液産生細胞へ集積", disease: ["メッケル憩室"], notes: "検査前絶食。小児の下血等で疑う。" },
+    { type: "治療", organ: "甲状腺", category: "治療", nuclide: "131I", drugName: "NaI (カプセル)", mechanism: "β線による内部照射", disease: ["バセドウ病", "甲状腺癌"], notes: "退室基準：体内残存500MBq以下 または 1m距離で30μSv/h以下。" },
+    { type: "治療", organ: "神経内分泌", category: "治療", nuclide: "177Lu", drugName: "オキソドトレオチド", mechanism: "ソマトスタチン受容体への結合・β線照射", disease: ["神経内分泌腫瘍 (NET)"], notes: "PRRT療法。腎保護のためアミノ酸輸液を併用。" },
+    { type: "治療", organ: "骨転移", category: "治療", nuclide: "223Ra", drugName: "塩化ラジウム", mechanism: "カルシウム同族として集積", disease: ["去勢抵抗性前立腺癌の骨転移"], notes: "α線放出核種。全生存期間の改善。飛程が短く正常組織の被ばくが少ない。" },
+    { type: "治療", organ: "リンパ腫", category: "治療", nuclide: "90Y", drugName: "イブリツモマブチウキセタン", mechanism: "CD20抗原への特異的結合・β線照射", disease: ["CD20陽性 再発/難治性非ホジキンリンパ腫"], notes: "純β放出体のため遮へいはアクリル等を使用。" }
 ];
 
 // --- 📡 検出器データベース（要素データ付き） ---
