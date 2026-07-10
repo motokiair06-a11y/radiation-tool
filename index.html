@@ -12,7 +12,7 @@
 <div class="container">
     <h2>放射性核種 統合ナビゲーター</h2>
     <div class="tabs">
-        <div class="tab active" onclick="switchTab('search-tab')">核種・医薬品検索</div>
+        <div class="tab active" onclick="switchTab('search-tab')">核種・核医学検索</div>
         <div class="tab" onclick="switchTab('calc-tab')">計算ツール</div>
         <div class="tab" onclick="switchTab('quiz-tab')">国試対策クイズ</div>
     </div>
@@ -23,7 +23,7 @@
             <div class="search-sidebar">
                 <div style="display:flex; gap:6px; margin-bottom:15px;">
                     <button id="btn-nuclide-mode" class="action-btn primary" onclick="switchSearchMode('nuclide')" style="flex:1; padding:10px; font-size:13px;">⚛️ 核種</button>
-                    <button id="btn-pharma-mode" class="action-btn secondary" onclick="switchSearchMode('pharma')" style="flex:1; padding:10px; background-color:#ecf0f1; color:#7f8c8d; border-color:#bdc3c7; font-size:13px;">💊 医薬品</button>
+                    <button id="btn-pharma-mode" class="action-btn secondary" onclick="switchSearchMode('pharma')" style="flex:1; padding:10px; background-color:#ecf0f1; color:#7f8c8d; border-color:#bdc3c7; font-size:13px;">💊 核医学</button>
                     <button id="btn-detector-mode" class="action-btn secondary" onclick="switchSearchMode('detector')" style="flex:1; padding:10px; background-color:#ecf0f1; color:#7f8c8d; border-color:#bdc3c7; font-size:13px;">📡 検出器</button>
                 </div>
 
@@ -74,6 +74,13 @@
 
                     <div id="pharma-filters" style="display:none;">
                         <div class="filter-group">
+                            <label>📌 分類</label>
+                            <div class="filter-tags" id="type-filters">
+                                <div class="filter-tag" data-value="診断" onclick="toggleFilter(this)">核医学診断</div>
+                                <div class="filter-tag" data-value="治療" onclick="toggleFilter(this)">核医学治療</div>
+                            </div>
+                        </div>
+                        <div class="filter-group">
                             <label>📌 対象部位</label>
                             <div class="filter-tags" id="organ-filters">
                                 <div class="filter-tag" data-value="脳" onclick="toggleFilter(this)">脳</div>
@@ -83,7 +90,7 @@
                                 <div class="filter-tag" data-value="腎" onclick="toggleFilter(this)">腎臓</div>
                                 <div class="filter-tag" data-value="肝" onclick="toggleFilter(this)">肝・胆道</div>
                                 <div class="filter-tag" data-value="腫瘍" onclick="toggleFilter(this)">腫瘍</div>
-                                <div class="filter-tag" data-value="治療" onclick="toggleFilter(this)">RI内用療法</div>
+                                <div class="filter-tag" data-value="内分泌" onclick="toggleFilter(this)">内分泌</div>
                             </div>
                         </div>
                     </div>
